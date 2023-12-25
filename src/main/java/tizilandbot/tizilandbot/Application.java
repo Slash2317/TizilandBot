@@ -26,7 +26,6 @@ public class Application {
         TizilandBotListener tizilandBotListener = new TizilandBotListener();
 
         JDABuilder.createDefault(props.getProperty("token"))
-                .setActivity(Activity.listening("the screams of the damned"))
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                 .addEventListeners(tizilandBotListener)
                 .build();
