@@ -4,9 +4,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class TizilandBotListener extends ListenerAdapter {
 
@@ -41,7 +39,7 @@ public class TizilandBotListener extends ListenerAdapter {
                     :star2: Mods: Nathan (natxer43) | TireCuzWhyNot (tirecuzwhynot) | Ajax (arsunal)""").queue();
             case EVENT_START -> event.getChannel().sendMessage("The event just started, come join and participate! :star2:").queue();
             case EVENT_OVER -> event.getChannel().sendMessage("This event has been closed. Thanks for participating! :heart:").queue();
-            case ECHO -> event.getChannel().sendMessage(requestContext.getParameters()).queue();
+            case ECHO -> sendEcho(requestContext);
         }
     }
 
@@ -57,5 +55,11 @@ public class TizilandBotListener extends ListenerAdapter {
             commandDisplays.add(sb.toString());
         }
         return commandDisplays;
+    }
+
+    private void sendEcho(RequestContext requestContext) {
+        if (requestContext.getArguments() != null && !requestContext.getArguments().isBlank()) {
+            requestContext.getEvent().getChannel().sendMessage(requestContext.getArguments()).queue();
+        }
     }
 }
