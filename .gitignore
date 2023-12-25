@@ -1,0 +1,11 @@
+# Idea
+.idea/*
+
+# Gradle
+.gradle
+build
+
+# CoffeeMachine
+/DiscordCoffeeMachineBot_*
+src/main/resources/config-dev.properties
+src/main/resources/config-prod.properties
