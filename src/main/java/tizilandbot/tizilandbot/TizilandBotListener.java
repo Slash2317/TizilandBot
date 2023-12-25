@@ -11,8 +11,15 @@ public class TizilandBotListener extends ListenerAdapter {
             return;
         }
 
-        if (event.getMessage().getContentRaw().contains("t!help")) {
+        RequestContext requestContext = RequestContext.from(event);
+
+        if (requestContext.getCommand() == Command.HELP) {
             event.getChannel().sendMessage("oh help yourself").queue();
+        }
+        else if (requestContext.getCommand() == Command.TIZILAND) {
+            event.getChannel().sendMessage("The only links to join Tiziland and invite people are:\n" +
+                    ":tiziland_link: Discord Invite Link: https://discord.gg/9XTkWVbycs\n" +
+                    ":tiziland_link: Bit.ly Invite Link: http://bit.ly/tiziland").queue();
         }
     }
 }
