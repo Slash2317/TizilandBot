@@ -21,7 +21,7 @@ public class TizilandBotListener extends ListenerAdapter {
         }
 
         switch (requestContext.getCommand()) {
-            case HELP -> event.getChannel().sendMessage(String.join("\n", getListOfCommands())).queue();
+            case HELP -> handleHelpCommand(requestContext);
             case TIZILAND -> event.getChannel().sendMessage("""
                     The only links to join Tiziland and invite people are:
                     :tiziland_link: Discord Invite Link: https://discord.gg/9XTkWVbycs
@@ -43,8 +43,9 @@ public class TizilandBotListener extends ListenerAdapter {
         }
     }
 
-    private List<String> getListOfCommands() {
-        List<String> commandDisplays = new ArrayList<>();
+    private void handleHelpCommand(RequestContext requestContext) {
+        List<String> regularCommandDisplays = new ArrayList<>();
+        List<String> staffCommandDisplays = new ArrayList<>();
         for (Command command : Command.values()) {
             StringBuilder sb = new StringBuilder();
             sb.append(command.getCommandName());
@@ -52,9 +53,19 @@ public class TizilandBotListener extends ListenerAdapter {
                 sb.append(" [" + String.join(", ", command.getParameters()) + "]");
             }
             sb.append(" (" + command.getDescription() + ")");
-            commandDisplays.add(sb.toString());
+
+            if (Command.STAFF_ONLY_COMMANDS.contains(command)) {
+                staffCommandDisplays.add(sb.toString());
+            }
+            else {
+                regularCommandDisplays.add(sb.toString());
+            }
         }
-        return commandDisplays;
+
+        requestContext.getEvent().getChannel().sendMessage("**REGULAR COMMANDS**\n" +
+                String.join("\n", regularCommandDisplays) +
+                "\n\n**STAFF COMMANDS**\n" +
+                String.join("\n", staffCommandDisplays)).queue();
     }
 
     private void sendEcho(RequestContext requestContext) {
