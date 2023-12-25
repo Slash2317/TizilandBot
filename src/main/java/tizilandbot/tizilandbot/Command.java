@@ -1,7 +1,5 @@
 package tizilandbot.tizilandbot;
 
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-
 public enum Command {
 
     HELP("t!help"),
