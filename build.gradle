@@ -62,6 +62,8 @@ task deploy {
     }
 }
 
+deploy.dependsOn(assemble)
+
 task deployProd {
     outputs.upToDateWhen { false }
 
