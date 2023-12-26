@@ -37,9 +37,9 @@ public class TizilandBotListener extends ListenerAdapter {
                     :tools: Community Manager: Xanth (._.xanth._.)
                     :sparkles: Admins: N/A
                     :star2: Mods: Nathan (natxer43) | TireCuzWhyNot (tirecuzwhynot) | Ajax (arsunal)""").queue();
-            case EVENT_START -> event.getChannel().sendMessage("The event just started, come join and participate! :star2:").queue();
-            case EVENT_OVER -> event.getChannel().sendMessage("This event has been closed. Thanks for participating! :heart:").queue();
-            case ECHO -> sendEcho(requestContext);
+            case EVENT_START -> handleEventStartCommand(requestContext);
+            case EVENT_OVER -> handleEventOverCommand(requestContext);
+            case ECHO -> handleEchoCommand(requestContext);
         }
     }
 
@@ -68,9 +68,28 @@ public class TizilandBotListener extends ListenerAdapter {
                 String.join("\n", staffCommandDisplays)).queue();
     }
 
-    private void sendEcho(RequestContext requestContext) {
+    private void handleEventStartCommand(RequestContext requestContext) {
+        if (isStaff(requestContext.getEvent())) {
+            requestContext.getEvent().getChannel().sendMessage("The event just started, come join and participate! :star2:").queue();
+        }
+    }
+
+    private void handleEventOverCommand(RequestContext requestContext) {
+        if (isStaff(requestContext.getEvent())) {
+            requestContext.getEvent().getChannel().sendMessage("This event has been closed. Thanks for participating! :heart:").queue();
+        }
+    }
+
+    private void handleEchoCommand(RequestContext requestContext) {
         if (requestContext.getArguments() != null && !requestContext.getArguments().isBlank()) {
             requestContext.getEvent().getChannel().sendMessage(requestContext.getArguments()).queue();
         }
+    }
+
+    private static boolean isStaff(MessageReceivedEvent event) {
+        if (event.getMember() == null) {
+            return false;
+        }
+        return event.getMember().getRoles().stream().anyMatch(r -> r.getName().contains("Staff"));
     }
 }
