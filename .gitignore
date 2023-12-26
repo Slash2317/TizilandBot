@@ -1,5 +1,11 @@
 # Idea
-.idea/*
+.idea/libraries
+.idea/modules
+.idea/jarRepositories.xml
+.idea/libraries-with-intellij-classes.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
 
 # Gradle
 .gradle
