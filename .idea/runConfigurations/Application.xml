@@ -4,7 +4,7 @@
     <module name="TizilandBot.main" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="com.slash.tizilandbot.*" />
+        <option name="PATTERN" value="com.slash.tizilandbot.request.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

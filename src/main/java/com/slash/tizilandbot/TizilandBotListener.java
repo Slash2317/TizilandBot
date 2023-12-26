@@ -1,5 +1,7 @@
 package com.slash.tizilandbot;
 
+import com.slash.tizilandbot.request.Command;
+import com.slash.tizilandbot.request.RequestContext;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -16,11 +18,11 @@ public class TizilandBotListener extends ListenerAdapter {
 
         RequestContext requestContext = RequestContext.from(event);
 
-        if (requestContext.getCommand() == null) {
+        if (requestContext.command() == null) {
             return;
         }
 
-        switch (requestContext.getCommand()) {
+        switch (requestContext.command()) {
             case HELP -> handleHelpCommand(requestContext);
             case TIZILAND -> event.getChannel().sendMessage("""
                     The only links to join Tiziland and invite people are:
@@ -62,27 +64,27 @@ public class TizilandBotListener extends ListenerAdapter {
             }
         }
 
-        requestContext.getEvent().getChannel().sendMessage("**REGULAR COMMANDS**\n" +
+        requestContext.event().getChannel().sendMessage("**REGULAR COMMANDS**\n" +
                 String.join("\n", regularCommandDisplays) +
                 "\n\n**STAFF COMMANDS**\n" +
                 String.join("\n", staffCommandDisplays)).queue();
     }
 
     private void handleEventStartCommand(RequestContext requestContext) {
-        if (isStaff(requestContext.getEvent())) {
-            requestContext.getEvent().getChannel().sendMessage("The event just started, come join and participate! :star2:").queue();
+        if (isStaff(requestContext.event())) {
+            requestContext.event().getChannel().sendMessage("The event just started, come join and participate! :star2:").queue();
         }
     }
 
     private void handleEventOverCommand(RequestContext requestContext) {
-        if (isStaff(requestContext.getEvent())) {
-            requestContext.getEvent().getChannel().sendMessage("This event has been closed. Thanks for participating! :heart:").queue();
+        if (isStaff(requestContext.event())) {
+            requestContext.event().getChannel().sendMessage("This event has been closed. Thanks for participating! :heart:").queue();
         }
     }
 
     private void handleEchoCommand(RequestContext requestContext) {
-        if (requestContext.getArguments() != null && !requestContext.getArguments().isBlank()) {
-            requestContext.getEvent().getChannel().sendMessage(requestContext.getArguments()).queue();
+        if (requestContext.arguments() != null && !requestContext.arguments().isBlank()) {
+            requestContext.event().getChannel().sendMessage(requestContext.arguments()).queue();
         }
     }
 

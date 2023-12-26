@@ -1,4 +1,4 @@
-package com.slash.tizilandbot;
+package com.slash.tizilandbot.request;
 
 import java.util.Collections;
 import java.util.EnumSet;
