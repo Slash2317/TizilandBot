@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Application" type="Application" factoryName="Application" nameIsGenerated="true">
+  <configuration default="false" name="TizilandBot" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.slash.tizilandbot.Application" />
     <module name="TizilandBot.main" />
     <extension name="coverage">
