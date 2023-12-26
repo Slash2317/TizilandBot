@@ -1,6 +1,7 @@
 package com.slash.tizilandbot;
 
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ public class Application {
             TizilandBotListener tizilandBotListener = new TizilandBotListener();
 
             JDABuilder.createDefault(props.getProperty("token"))
+                    .setActivity(Activity.playing("Join Tiziland - t!help"))
                     .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                     .addEventListeners(tizilandBotListener)
                     .build();

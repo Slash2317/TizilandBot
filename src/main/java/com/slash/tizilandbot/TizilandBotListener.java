@@ -26,9 +26,9 @@ public class TizilandBotListener extends ListenerAdapter {
             case HELP -> handleHelpCommand(requestContext);
             case TIZILAND -> event.getChannel().sendMessage("""
                     The only links to join Tiziland and invite people are:
-                    :tiziland_link: Discord Invite Link: https://discord.gg/9XTkWVbycs
-                    :tiziland_link: Bit.ly Invite Link: http://bit.ly/tiziland""").queue();
-            case RULES -> event.getChannel().sendMessage(":tiziland_rules: You can read our rules here: https://discord.com/channels/1108179404137447484/1108181346033094736").queue();
+                    :link: Discord Invite Link: https://discord.gg/9XTkWVbycs
+                    :link: Bit.ly Invite Link: http://bit.ly/tiziland""").queue();
+            case RULES -> event.getChannel().sendMessage(":scroll: You can read our rules here: https://discord.com/channels/1108179404137447484/1108181346033094736").queue();
             case TIZIPAGES -> event.getChannel().sendMessage("""
                     Here are all the pages of Tizi:
                     -bit.ly/tiziabout
