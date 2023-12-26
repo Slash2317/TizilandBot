@@ -17,16 +17,16 @@ public class Application {
         Properties props = new Properties();
         try {
             props.load(Application.class.getClassLoader().getResourceAsStream("config-" + env + ".properties"));
+
+            TizilandBotListener tizilandBotListener = new TizilandBotListener();
+
+            JDABuilder.createDefault(props.getProperty("token"))
+                    .enableIntents(GatewayIntent.MESSAGE_CONTENT)
+                    .addEventListeners(tizilandBotListener)
+                    .build();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-
-        TizilandBotListener tizilandBotListener = new TizilandBotListener();
-
-        JDABuilder.createDefault(props.getProperty("token"))
-                .enableIntents(GatewayIntent.MESSAGE_CONTENT)
-                .addEventListeners(tizilandBotListener)
-                .build();
     }
 }
