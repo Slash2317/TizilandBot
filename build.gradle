@@ -105,7 +105,7 @@ assemble.dependsOn(copyDependencies)
 jar {
     manifest {
         attributes(
-                'Main-Class': 'tizilandbot.tizilandbot.Application',
+                'Main-Class': 'com.slash.tizilandbot.Application',
                 'Class-Path': configurations.runtimeClasspath.files.stream().map {'lib/' + it.name }.distinct().collect(Collectors.joining(' '))
         )
     }
