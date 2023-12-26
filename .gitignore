@@ -6,6 +6,6 @@
 build
 
 # TizilandBot
-/DiscordTizilandBot_*
+DiscordTizilandBot_*
 src/main/resources/config-dev.properties
 src/main/resources/config-prod.properties
