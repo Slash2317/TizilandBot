@@ -3,6 +3,6 @@
     <id>@SERVICE_NAME@</id>
     <name>@DISPLAY_NAME@</name>
     <description>@DISPLAY_NAME@ Windows Service</description>
-    <executable>java</executable>
+    <executable>"%JAVA21_HOME%\java.exe"</executable>
     <arguments>-Dapp.profiles.active=@APP_PROFILE@ -jar @SERVICE_NAME@.jar</arguments>
 </service>
