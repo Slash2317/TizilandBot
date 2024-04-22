@@ -63,7 +63,7 @@ public class TizilandBotListener extends ListenerAdapter {
         sb.append("""
                 **TIZILAND BOT | COMMANDS**
                 ------------------------------------------------""");
-        sb.append("\n" + String.join("\n", commandDisplays));
+        sb.append("\n\n" + String.join("\n", commandDisplays));
 
         requestContext.event().getChannel().sendMessage(sb.toString()).queue();
     }
