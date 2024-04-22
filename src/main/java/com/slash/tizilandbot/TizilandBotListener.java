@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TizilandBotListener extends ListenerAdapter {
 
@@ -30,24 +31,22 @@ public class TizilandBotListener extends ListenerAdapter {
                     :link: Bit.ly Invite Link: http://bit.ly/tiziland""").queue();
             case RULES -> event.getChannel().sendMessage(":scroll: You can read our rules here: https://discord.com/channels/1108179404137447484/1108181346033094736").queue();
             case TIZIPAGES -> event.getChannel().sendMessage("""
-                    Here are all the pages of Tizi:
-                    -bit.ly/tiziabout
-                    -bit.ly/tizisocial
-                    -bit.ly/tizi-links""").queue();
+                    **Here are our current invite links!** :link:
+                    
+                    :link: Discord Invite Link: https://discord.gg/ugVnJgeSgq
+                    :paperclips: Bit.ly Invite Link: http://bit.ly/tiziland_dis""").queue();
             case STAFF -> event.getChannel().sendMessage("""
-                    :crown: Owner: Tizi!! (tiziandfrodo)
-                    :tools: Community Manager: Xanth (._.xanth._.)
-                    :sparkles: Admins: N/A
-                    :star2: Mods: Nathan (natxer43) | TireCuzWhyNot (tirecuzwhynot) | Ajax (arsunal)""").queue();
-            case EVENT_START -> handleEventStartCommand(requestContext);
-            case EVENT_OVER -> handleEventOverCommand(requestContext);
+                    **Here's a list of our current staff!**
+                    
+                    :crown: OWNER : Tizi!! (tiziandfrodo)
+                    :tools: COMMUNITY MANAGER : Xanth (._.xanth._.)
+                    :star2: ADMINISTRATOR(S) : Astral (astral.null)""").queue();
             case ECHO -> handleEchoCommand(requestContext);
         }
     }
 
     private void handleHelpCommand(RequestContext requestContext) {
-        List<String> regularCommandDisplays = new ArrayList<>();
-        List<String> staffCommandDisplays = new ArrayList<>();
+        List<String> commandDisplays = new ArrayList<>();
         for (Command command : Command.values()) {
             StringBuilder sb = new StringBuilder();
             sb.append(command.getCommandName());
@@ -56,30 +55,16 @@ public class TizilandBotListener extends ListenerAdapter {
             }
             sb.append(" (" + command.getDescription() + ")");
 
-            if (Command.STAFF_ONLY_COMMANDS.contains(command)) {
-                staffCommandDisplays.add(sb.toString());
-            }
-            else {
-                regularCommandDisplays.add(sb.toString());
-            }
+            commandDisplays.add(sb.toString());
         }
 
-        requestContext.event().getChannel().sendMessage("**REGULAR COMMANDS**\n" +
-                String.join("\n", regularCommandDisplays) +
-                "\n\n**STAFF COMMANDS**\n" +
-                String.join("\n", staffCommandDisplays)).queue();
-    }
+        StringBuilder sb = new StringBuilder();
+        sb.append("""
+                **TIZILAND BOT | COMMANDS**
+                ------------------------------------------------""");
+        sb.append("\n" + String.join("\n", commandDisplays));
 
-    private void handleEventStartCommand(RequestContext requestContext) {
-        if (isStaff(requestContext.event())) {
-            requestContext.event().getChannel().sendMessage("The event just started, come join and participate! :star2:").queue();
-        }
-    }
-
-    private void handleEventOverCommand(RequestContext requestContext) {
-        if (isStaff(requestContext.event())) {
-            requestContext.event().getChannel().sendMessage("This event has been closed. Thanks for participating! :heart:").queue();
-        }
+        requestContext.event().getChannel().sendMessage(sb.toString()).queue();
     }
 
     private void handleEchoCommand(RequestContext requestContext) {
