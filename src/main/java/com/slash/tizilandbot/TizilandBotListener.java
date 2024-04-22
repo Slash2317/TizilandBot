@@ -26,21 +26,22 @@ public class TizilandBotListener extends ListenerAdapter {
         switch (requestContext.command()) {
             case HELP -> handleHelpCommand(requestContext);
             case TIZILAND -> event.getChannel().sendMessage("""
-                    The only links to join Tiziland and invite people are:
-                    :link: Discord Invite Link: https://discord.gg/9XTkWVbycs
-                    :link: Bit.ly Invite Link: http://bit.ly/tiziland""").queue();
-            case RULES -> event.getChannel().sendMessage(":scroll: You can read our rules here: https://discord.com/channels/1108179404137447484/1108181346033094736").queue();
-            case TIZIPAGES -> event.getChannel().sendMessage("""
                     **Here are our current invite links!** :link:
                     
                     :link: Discord Invite Link: https://discord.gg/ugVnJgeSgq
                     :paperclips: Bit.ly Invite Link: http://bit.ly/tiziland_dis""").queue();
+            case RULES -> event.getChannel().sendMessage(":scroll: You can read our rules here: https://discord.com/channels/1108179404137447484/1108181346033094736").queue();
+            case TIZIPAGES -> event.getChannel().sendMessage("""
+                    Here are all the pages of Tizi:
+                    -bit.ly/tiziabout
+                    -bit.ly/tizisocial
+                    -bit.ly/tizi-links""").queue();
             case STAFF -> event.getChannel().sendMessage("""
                     **Here's a list of our current staff!**
                     
-                    :crown: OWNER : Tizi!! (tiziandfrodo)
-                    :tools: COMMUNITY MANAGER : Xanth (._.xanth._.)
-                    :star2: ADMINISTRATOR(S) : Astral (astral.null)""").queue();
+                    :crown: OWNER : Tizi!! `(tiziandfrodo)`
+                    :tools: COMMUNITY MANAGER : Xanth `(._.xanth._.)`
+                    :star2: ADMINISTRATOR(S) : Astral `(astral.null)`""").queue();
             case ECHO -> handleEchoCommand(requestContext);
         }
     }
