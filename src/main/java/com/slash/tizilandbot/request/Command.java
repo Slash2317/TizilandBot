@@ -11,7 +11,7 @@ public enum Command {
     RULES("t!rules", "shows where to find server rules"),
     TIZIPAGES("t!tizipages", "gives links to all tizi pages"),
     STAFF("t!staff", "gets the full list of current server staff"),
-    VERIFY("t!verify", "get verified"),
+    VERIFY("t!verify", "", true),
     VERIFY_MSG("t!verifymsg", "", true),
     ECHO("t!echo", "says the requested content", List.of("message"));
 
