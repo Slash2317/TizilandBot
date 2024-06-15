@@ -2,12 +2,14 @@ package com.slash.tizilandbot;
 
 import com.slash.tizilandbot.request.Command;
 import com.slash.tizilandbot.request.RequestContext;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class TizilandBotListener extends ListenerAdapter {
 
@@ -42,6 +44,7 @@ public class TizilandBotListener extends ListenerAdapter {
                     :crown: OWNER : Tizi!! `(tiziandfrodo)`
                     :tools: COMMUNITY MANAGER : Xanth `(._.xanth._.)`
                     :star2: ADMINISTRATOR(S) : Astral `(astral.null)`""").queue();
+            case VERIFY -> handleVerifyCommand(requestContext);
             case ECHO -> handleEchoCommand(requestContext);
         }
     }
@@ -49,6 +52,9 @@ public class TizilandBotListener extends ListenerAdapter {
     private void handleHelpCommand(RequestContext requestContext) {
         List<String> commandDisplays = new ArrayList<>();
         for (Command command : Command.values()) {
+            if (command.isHidden()) {
+                continue;
+            }
             StringBuilder sb = new StringBuilder();
             sb.append(command.getCommandName());
             if (!command.getParameters().isEmpty()) {
@@ -66,6 +72,20 @@ public class TizilandBotListener extends ListenerAdapter {
         sb.append("\n\n" + String.join("\n", commandDisplays));
 
         requestContext.event().getChannel().sendMessage(sb.toString()).queue();
+    }
+
+    private void handleVerifyCommand(RequestContext requestContext) {
+        if (!isStaff(requestContext.event())) {
+            return;
+        }
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(Color.decode("#a020f0"))
+                .setAuthor("Tiziland!! - Your place.")
+                .setTitle("Verification")
+                .setDescription("""
+                        To Verify in Tiziland, you must react with :white_check_mark: to this message.""");
+
+        requestContext.event().getChannel().sendMessageEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList()).queue();
     }
 
     private void handleEchoCommand(RequestContext requestContext) {
