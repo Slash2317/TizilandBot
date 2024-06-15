@@ -89,11 +89,11 @@ public class TizilandBotListener extends ListenerAdapter {
                         :link: [ tiziland.dis/verifyissues ]( https://discord.com/channels/1170374164566249562/1170374165451264092/1251577671863898242 )""");
 
             requestContext.event().getChannel().sendMessageEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList())
-                    .queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+                    .queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
             return;
         }
 
-        List<Role> roles = requestContext.event().getGuild().getRolesByName("verify", true);
+        List<Role> roles = requestContext.event().getGuild().getRolesByName("verified", true);
 
         if (roles.isEmpty()) {
             return;
@@ -112,7 +112,7 @@ public class TizilandBotListener extends ListenerAdapter {
                         :link:[ tiziland.dis/verifyissues ]( https://discord.com/channels/1108179404137447484/1108181838754742282 )""");
 
         requestContext.event().getChannel().sendMessageEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList())
-                .queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+                .queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
     }
 
     private void handleEchoCommand(RequestContext requestContext) {
