@@ -47,6 +47,7 @@ public class TizilandBotListener extends ListenerAdapter {
                     :tools: COMMUNITY MANAGER : Xanth `(._.xanth._.)`
                     :star2: ADMINISTRATOR(S) : Astral `(astral.null)`""").queue();
             case VERIFY -> handleVerifyCommand(requestContext);
+            case VERIFY_MSG -> handleVerifyMsgCommand(requestContext);
             case ECHO -> handleEchoCommand(requestContext);
         }
     }
@@ -54,6 +55,9 @@ public class TizilandBotListener extends ListenerAdapter {
     private void handleHelpCommand(RequestContext requestContext) {
         List<String> commandDisplays = new ArrayList<>();
         for (Command command : Command.values()) {
+            if (command.isHidden()) {
+                continue;
+            }
             StringBuilder sb = new StringBuilder();
             sb.append(command.getCommandName());
             if (!command.getParameters().isEmpty()) {
@@ -113,6 +117,20 @@ public class TizilandBotListener extends ListenerAdapter {
 
         requestContext.event().getChannel().sendMessageEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList())
                 .queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
+    }
+
+    private void handleVerifyMsgCommand(RequestContext requestContext) {
+        if (!isStaff(requestContext.event())) {
+            return;
+        }
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(Color.decode("#a020f0"))
+                .setAuthor("Tiziland!!")
+                .setTitle("Verification")
+                .setDescription("""
+                        To verify in Tiziland, you must use the `t!verify` command in this channel.""");
+
+        requestContext.event().getChannel().sendMessageEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList()).queue();
     }
 
     private void handleEchoCommand(RequestContext requestContext) {
