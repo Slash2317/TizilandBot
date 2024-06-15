@@ -11,31 +11,22 @@ public enum Command {
     RULES("t!rules", "shows where to find server rules"),
     TIZIPAGES("t!tizipages", "gives links to all tizi pages"),
     STAFF("t!staff", "gets the full list of current server staff"),
-    VERIFY("t!verify", "", true),
+    VERIFY("t!verify", "get verified"),
     ECHO("t!echo", "says the requested content", List.of("message"));
 
     private final String commandName;
     private final String description;
     private final List<String> parameters;
-    private final boolean hidden;
 
-    Command(String commandName, String description, boolean hidden) {
-        this(commandName, description, Collections.emptyList(), hidden);
-    }
 
     Command(String commandName, String description, List<String> parameters) {
-        this(commandName, description, parameters, false);
+        this.commandName = commandName;
+        this.description = description;
+        this.parameters = parameters;
     }
 
     Command(String commandName, String description) {
         this(commandName, description, Collections.emptyList());
-    }
-
-    Command(String commandName, String description, List<String> parameters, boolean hidden) {
-        this.commandName = commandName;
-        this.description = description;
-        this.parameters = parameters;
-        this.hidden = hidden;
     }
 
     public String getCommandName() {
@@ -48,10 +39,6 @@ public enum Command {
 
     public List<String> getParameters() {
         return parameters;
-    }
-
-    public boolean isHidden() {
-        return hidden;
     }
 
     public static Command getCommand(String message) {

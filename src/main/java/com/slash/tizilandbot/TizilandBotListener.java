@@ -3,6 +3,7 @@ package com.slash.tizilandbot;
 import com.slash.tizilandbot.request.Command;
 import com.slash.tizilandbot.request.RequestContext;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -10,6 +11,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class TizilandBotListener extends ListenerAdapter {
 
@@ -52,9 +54,6 @@ public class TizilandBotListener extends ListenerAdapter {
     private void handleHelpCommand(RequestContext requestContext) {
         List<String> commandDisplays = new ArrayList<>();
         for (Command command : Command.values()) {
-            if (command.isHidden()) {
-                continue;
-            }
             StringBuilder sb = new StringBuilder();
             sb.append(command.getCommandName());
             if (!command.getParameters().isEmpty()) {
@@ -75,17 +74,45 @@ public class TizilandBotListener extends ListenerAdapter {
     }
 
     private void handleVerifyCommand(RequestContext requestContext) {
-        if (!isStaff(requestContext.event())) {
+        if (requestContext.event().getMember() == null) {
             return;
         }
+
+        List<Role> userRoles = requestContext.event().getMember().getRoles();
+        if (userRoles.stream().anyMatch(r -> r.getName().equalsIgnoreCase("verified"))) {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setColor(Color.decode("#a020f0"))
+                    .setAuthor("Tiziland!!")
+                    .setTitle("Error")
+                    .setDescription("""
+                        It seems you are already verified! If you are experiencing any issues, check out
+                        :link: [ tiziland.dis/verifyissues ]( https://discord.com/channels/1170374164566249562/1170374165451264092/1251577671863898242 )""");
+
+            requestContext.event().getChannel().sendMessageEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList())
+                    .queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+            return;
+        }
+
+        List<Role> roles = requestContext.event().getGuild().getRolesByName("verify", true);
+
+        if (roles.isEmpty()) {
+            return;
+        }
+
+        for (Role role : roles) {
+            requestContext.event().getGuild().addRoleToMember(requestContext.event().getMember(), role).queue();
+        }
+
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(Color.decode("#a020f0"))
                 .setAuthor("Tiziland!!")
                 .setTitle("Verification")
                 .setDescription("""
-                        To Verify in Tiziland, you must react with :white_check_mark: to this message.""");
+                        You've been successfully verified. If you're experiencing issues, check out
+                        :link:[ tiziland.dis/verifyissues ]( https://discord.com/channels/1108179404137447484/1108181838754742282 )""");
 
-        requestContext.event().getChannel().sendMessageEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList()).queue();
+        requestContext.event().getChannel().sendMessageEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList())
+                .queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
     }
 
     private void handleEchoCommand(RequestContext requestContext) {
