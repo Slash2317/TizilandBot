@@ -80,7 +80,7 @@ public class TizilandBotListener extends ListenerAdapter {
         }
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(Color.decode("#a020f0"))
-                .setAuthor("Tiziland!! - Your place.")
+                .setAuthor("Tiziland!!")
                 .setTitle("Verification")
                 .setDescription("""
                         To Verify in Tiziland, you must react with :white_check_mark: to this message.""");
