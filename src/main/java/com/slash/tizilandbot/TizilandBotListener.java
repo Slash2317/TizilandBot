@@ -78,6 +78,9 @@ public class TizilandBotListener extends ListenerAdapter {
     }
 
     private void handleVerifyCommand(RequestContext requestContext) {
+        if (!isVerifyChannel(requestContext.event())) {
+            return;
+        }
         if (requestContext.event().getMember() == null) {
             return;
         }
@@ -120,7 +123,7 @@ public class TizilandBotListener extends ListenerAdapter {
     }
 
     private void handleVerifyMsgCommand(RequestContext requestContext) {
-        if (!isStaff(requestContext.event())) {
+        if (!isStaff(requestContext.event()) || !isVerifyChannel(requestContext.event())) {
             return;
         }
         EmbedBuilder embedBuilder = new EmbedBuilder();
@@ -144,5 +147,12 @@ public class TizilandBotListener extends ListenerAdapter {
             return false;
         }
         return event.getMember().getRoles().stream().anyMatch(r -> r.getName().contains("Staff"));
+    }
+
+    private static boolean isVerifyChannel(MessageReceivedEvent event) {
+        String channelName = event.getChannel().getName().toLowerCase();
+        return channelName.contains("staff") ||
+        channelName.contains("important-shit") ||
+        channelName.contains("verify");
     }
 }
