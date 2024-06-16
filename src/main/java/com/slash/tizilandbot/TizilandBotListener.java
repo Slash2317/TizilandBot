@@ -131,7 +131,9 @@ public class TizilandBotListener extends ListenerAdapter {
                 .setAuthor("Tiziland!!")
                 .setTitle("Verification")
                 .setDescription("""
-                        To verify in Tiziland, you must use the `t!verify` command in this channel.""");
+                        To verify in Tiziland, you must use the `t!verify` command in this channel.
+                        
+                        :warning: DISCLAIMER: If your verification is not working, check if the bot is online, as the bot depends on the owner's computer running. You'll have to wait until the bot is up. We're sorry and we are working to get the bot hosted 24/7!""");
 
         requestContext.event().getChannel().sendMessageEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList()).queue();
     }
