@@ -92,7 +92,7 @@ public class TizilandBotListener extends ListenerAdapter {
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
         CommandGroup group = Arrays.stream(CommandGroup.values()).filter(g -> g.getIdentifier().equalsIgnoreCase(event.getComponentId())).findFirst().get();
-        miscRequestHandler.handleHelpCommand(event, group);
+        miscRequestHandler.handleHelpButtonCommand(event, group);
     }
 
     @Override

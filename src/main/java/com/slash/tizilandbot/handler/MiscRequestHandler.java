@@ -37,7 +37,7 @@ public class MiscRequestHandler {
         messageCreateAction.queue();
     }
 
-    public void handleHelpCommand(ButtonInteractionEvent event, CommandGroup commandGroup) {
+    public void handleHelpButtonCommand(ButtonInteractionEvent event, CommandGroup commandGroup) {
         List<Command> commands = Arrays.stream(Command.values()).filter(c -> c.getCommandGroup() == commandGroup && !c.isHidden()).toList();
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
