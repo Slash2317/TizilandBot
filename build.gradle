@@ -9,6 +9,8 @@ plugins {
 group 'tizilandbot.tizilandbot'
 version '1.0'
 
+compileJava.options.encoding = 'UTF-8'
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))

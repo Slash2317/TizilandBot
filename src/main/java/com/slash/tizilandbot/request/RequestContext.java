@@ -7,6 +7,13 @@ public record RequestContext(Command command, String arguments, MessageReceivedE
     public static RequestContext from(MessageReceivedEvent event) {
         Command command = Command.getCommand(event.getMessage().getContentRaw());
         if (command != null) {
+            if (command.isPrefix()) {
+                if (event.getMessage().getContentRaw().length() > command.getCommandName().length()) {
+                    String arguments = event.getMessage().getContentRaw().substring(command.getCommandName().length());
+                    return new RequestContext(command, arguments, event);
+                }
+            }
+
             if (event.getMessage().getContentRaw().length() > command.getCommandName().length() + 1) {
                 String arguments = event.getMessage().getContentRaw().substring(command.getCommandName().length() + 1);
                 return new RequestContext(command, arguments, event);
