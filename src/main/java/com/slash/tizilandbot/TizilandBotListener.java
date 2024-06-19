@@ -68,7 +68,6 @@ public class TizilandBotListener extends ListenerAdapter {
             case COIN_FLIP -> miscRequestHandler.handleCoinFlipCommand(requestContext);
             case ROLL_DICE -> miscRequestHandler.handleRollDiceCommand(requestContext);
             case HELP -> miscRequestHandler.handleHelpCommand(requestContext);
-            case INVITE -> miscRequestHandler.handleInviteCommand(requestContext);
         }
     }
 

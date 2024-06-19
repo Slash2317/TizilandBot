@@ -156,25 +156,4 @@ public class MiscRequestHandler {
             requestContext.event().getChannel().sendMessage(requestContext.arguments()).queue();
         }
     }
-
-    public void handleInviteCommand(RequestContext requestContext) {
-        String inviteUrl = requestContext.event().getJDA().getInviteUrl(
-                Permission.MANAGE_ROLES,
-                Permission.KICK_MEMBERS,
-                Permission.BAN_MEMBERS,
-                Permission.CREATE_INSTANT_INVITE,
-                Permission.MODERATE_MEMBERS,
-                Permission.MESSAGE_SEND,
-                Permission.MESSAGE_SEND_IN_THREADS,
-                Permission.MESSAGE_MANAGE,
-                Permission.MESSAGE_EMBED_LINKS,
-                Permission.USE_APPLICATION_COMMANDS
-        );
-
-        requestContext.event().getChannel().sendMessage("""
-                Here is our bot invite link! :smiley:
-                We're glad to hear you want to invite Frodo Utilities in your Discord Server, thank you so much!
-                :link: BOT INVITE LINK: http://bit.ly/frodoutilitiesinvite
-                :question: Having Trouble? Try this link instead:  [INVITE](""" + inviteUrl + ")").queue();
-    }
 }

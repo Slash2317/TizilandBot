@@ -28,8 +28,7 @@ public enum Command {
     COIN_FLIP("t!flipcoin", FUN, "Flips a coin"),
     ROLL_DICE("t!rolldice", FUN, "Rolls a dice (default 6 sides)", 0, List.of("sides:6")),
     HELP("t!help", MISC, "Shows list of commands"),
-    SLASH_HELP("/help", MISC, "Alternative Help command which explains we only support t! prefix."),
-    INVITE("t!invite", MISC, "Shows link to invite the bot");
+    SLASH_HELP("/help", MISC, "Alternative Help command which explains we only support t! prefix.");
 
     private final String commandName;
     private final String description;
