@@ -7,28 +7,26 @@ import static com.slash.tizilandbot.request.CommandGroup.*;
 
 public enum Command {
 
-    MUTE("t!mute", MODERATION, "Mutes a user (seconds)", 0, List.of("user", "duration")),
-    UN_MUTE("t!unmute", MODERATION, "Un-mutes a user", 0, List.of("user")),
-    KICK("t!kick", MODERATION, "Kicks a user", 0, List.of("user", "reason")),
-    BAN("t!ban", MODERATION, "Bans a user", 0, List.of("user", "reason")),
-    UNBAN("t!unban", MODERATION, "Unbans a user", 0, List.of("user")),
-    ROLE_GIVE("t!rolegive", MODERATION, "Adds a role to a user", 0, List.of("user", "role")),
-    ROLE_REMOVE("t!roleremove", MODERATION, "Removes a role from a user", 0, List.of("user", "role")),
-    MEMBER_INFO("t!member info", SERVER, "Provides information about a certain user", 0, List.of("user")),
-    SERVER_INFO("t!server info", SERVER, "Provides server information"),
-    TIZILAND("t!tiziland", SERVER, "shows invite links to tiziland"),
-    RULES("t!rules", SERVER, "shows where to find server rules"),
-    STAFF("t!staff", SERVER, "gets the full list of current server staff"),
-    VERIFY("t!verify", SERVER, "", 0, Collections.emptyList(), true),
-    VERIFY_MSG("t!verifymsg", SERVER, "", 0, Collections.emptyList(), true),
-    TIZIPAGES("t!tizipages", OFF_TOPIC, "gives links to all tizi pages"),
-    ECHO("t!echo", FUN, "Says the requested content", 0, List.of("message")),
-    ROCK_PAPER_SCISSORS("t!rps", FUN, "Play RPS with the bot", 0, List.of("rock/paper/scissors")),
-    ROCK_PAPER_SCISSORS_LIZARD_SPOCK("t!rpsls", FUN, "Play RPSLS with the bot", 0, List.of("rock/paper/scissors/lizard/spock"), true),
-    COIN_FLIP("t!flipcoin", FUN, "Flips a coin"),
-    ROLL_DICE("t!rolldice", FUN, "Rolls a dice (default 6 sides)", 0, List.of("sides:6")),
-    HELP("t!help", MISC, "Shows list of commands"),
-    SLASH_HELP("/help", MISC, "Alternative Help command which explains we only support t! prefix.");
+    MUTE("r!mute", MODERATION, "Mutes a user (seconds)", 0, List.of("user", "duration")),
+    UN_MUTE("r!unmute", MODERATION, "Un-mutes a user", 0, List.of("user")),
+    KICK("r!kick", MODERATION, "Kicks a user", 0, List.of("user", "reason")),
+    BAN("r!ban", MODERATION, "Bans a user", 0, List.of("user", "reason")),
+    UNBAN("r!unban", MODERATION, "Unbans a user", 0, List.of("user")),
+    ROLE_GIVE("r!rolegive", MODERATION, "Adds a role to a user", 0, List.of("user", "role")),
+    ROLE_REMOVE("r!roleremove", MODERATION, "Removes a role from a user", 0, List.of("user", "role")),
+    MEMBER_INFO("r!member info", SERVER, "Provides information about a certain user", 0, List.of("user")),
+    SERVER_INFO("r!server info", SERVER, "Provides server information"),
+    INVITE("r!invite", SERVER, "shows invite links to real tizi."),
+    RULES("r!rules", SERVER, "shows where to find server rules"),
+    STAFF("r!staff", SERVER, "gets the full list of current server staff"),
+    TIZIPAGES("r!tizipages", OFF_TOPIC, "gives links to all tizi pages"),
+    ECHO("r!echo", FUN, "Says the requested content", 0, List.of("message")),
+    ROCK_PAPER_SCISSORS("r!rps", FUN, "Play RPS with the bot", 0, List.of("rock/paper/scissors")),
+    ROCK_PAPER_SCISSORS_LIZARD_SPOCK("r!rpsls", FUN, "Play RPSLS with the bot", 0, List.of("rock/paper/scissors/lizard/spock"), true),
+    COIN_FLIP("r!flipcoin", FUN, "Flips a coin"),
+    ROLL_DICE("r!rolldice", FUN, "Rolls a dice (default 6 sides)", 0, List.of("sides:6")),
+    HELP("r!help", MISC, "Shows list of commands"),
+    SLASH_HELP("/help", MISC, "Alternative Help command which explains we only support r! prefix.");
 
     private final String commandName;
     private final String description;

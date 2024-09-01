@@ -22,7 +22,7 @@ public class Application {
             TizilandBotListener tizilandBotListener = new TizilandBotListener();
 
             JDABuilder.createDefault(props.getProperty("token"))
-                    .setActivity(Activity.playing("Join Tiziland - t!help"))
+                    .setActivity(Activity.playing("Join real tizi. - r!help"))
                     .enableIntents(GatewayIntent.GUILD_MEMBERS)
                     .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                     .addEventListeners(tizilandBotListener)

@@ -4,12 +4,11 @@ import com.slash.tizilandbot.request.RequestContext;
 
 public class TizilandRequestHandler {
 
-    public void handleTizilandCommand(RequestContext requestContext) {
+    public void handleInviteCommand(RequestContext requestContext) {
         requestContext.event().getChannel().sendMessage("""
-                    **Here are our current invite links!** :link:
-                    
-                    :link: Discord Invite Link: <https://discord.gg/R9Cf8PRQvS>
-                    :paperclips: Bit.ly Invite Link: <https://bit.ly/tiziland_ok>""").queue();
+                    <:realtizi_info:1187109742947074068> To invite someone, you can only use the following links:
+                    <:realtizi_link:1187466090096361563> Discord Invite Link: <https://discord.gg/R9Cf8PRQvS>
+                    <:realtizi_link:1187466090096361563> Short Invite Link: <http://bit.ly/realtizidiscord> | <https://tinyurl.com/realtizidiscord> | <https://t.ly/A8qjH>""").queue();
     }
 
     public void handleRulesCommand(RequestContext requestContext) {

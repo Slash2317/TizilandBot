@@ -23,14 +23,12 @@ public class TizilandBotListener extends ListenerAdapter {
     private InfoRequestHandler infoRequestHandler;
     private ModerationRequestHandler moderationRequestHandler;
     private MiscRequestHandler miscRequestHandler;
-    private VerifyRequestHandler verifyRequestHandler;
     private TizilandRequestHandler tizilandRequestHandler;
 
     public TizilandBotListener() {
         this.infoRequestHandler = new InfoRequestHandler();
         this.moderationRequestHandler = new ModerationRequestHandler();
         this.miscRequestHandler = new MiscRequestHandler();
-        this.verifyRequestHandler = new VerifyRequestHandler();
         this.tizilandRequestHandler = new TizilandRequestHandler();
     }
 
@@ -56,11 +54,9 @@ public class TizilandBotListener extends ListenerAdapter {
             case ROLE_REMOVE -> moderationRequestHandler.handleRoleRemoveCommand(requestContext);
             case MEMBER_INFO -> infoRequestHandler.handleMemberInfoCommand(requestContext);
             case SERVER_INFO -> infoRequestHandler.handleServerInfoCommand(requestContext);
-            case TIZILAND -> tizilandRequestHandler.handleTizilandCommand(requestContext);
+            case INVITE -> tizilandRequestHandler.handleInviteCommand(requestContext);
             case RULES -> tizilandRequestHandler.handleRulesCommand(requestContext);
             case STAFF -> tizilandRequestHandler.handleStaffCommand(requestContext);
-            case VERIFY -> verifyRequestHandler.handleVerifyCommand(requestContext);
-            case VERIFY_MSG -> verifyRequestHandler.handleVerifyMsgCommand(requestContext);
             case TIZIPAGES -> tizilandRequestHandler.handleTizipagesCommand(requestContext);
             case ECHO -> miscRequestHandler.handleEchoCommand(requestContext);
             case ROCK_PAPER_SCISSORS -> miscRequestHandler.handleRPSCommand(requestContext);
@@ -80,9 +76,9 @@ public class TizilandBotListener extends ListenerAdapter {
             embedBuilder.setColor(Color.decode("#a020f0"))
                     .setDescription("""
                         **Welcome!** :smiley:
-                        Currently, this bot, Tiziland Bot, does **not** support slash commands for coding and modifying to be easier.
-                        Instead, please use the prefix `t!` in all your commands. For example, t!help.
-                        **For the actual commands list, please use the t!help command in any chat this bot is enabled on.**""");
+                        Currently, this bot, real tizi. Bot, does **not** support slash commands for coding and modifying to be easier.
+                        Instead, please use the prefix `r!` in all your commands. For example, t!help.
+                        **For the actual commands list, please use the r!help command in any chat this bot is enabled on.**""");
 
             event.replyEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList()).queue();
         }
