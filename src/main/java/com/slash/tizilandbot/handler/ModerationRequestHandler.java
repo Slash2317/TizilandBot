@@ -225,10 +225,14 @@ public class ModerationRequestHandler {
                 throw new InvalidPermissionException("You do not have permission to give roles to other users");
             }
 
-            String user = arguments.get(0);
-            String roleName = arguments.get(1).trim();
+            List<Role> roles = new ArrayList<>(requestContext.event().getMessage().getMentions().getRoles());
 
-            List<Role> roles = requestContext.event().getGuild().getRolesByName(roleName, true);
+            if (roles.isEmpty()) {
+                String roleName = arguments.get(1).trim();
+                roles.addAll(requestContext.event().getGuild().getRolesByName(roleName, true));
+            }
+
+            String user = arguments.get(0);
 
             if (roles.isEmpty()) {
                 return;
@@ -288,10 +292,14 @@ public class ModerationRequestHandler {
                 throw new InvalidPermissionException("You do not have permission to remove roles other users");
             }
 
-            String user = arguments.get(0);
-            String roleName = arguments.get(1).trim();
+            List<Role> roles = new ArrayList<>(requestContext.event().getMessage().getMentions().getRoles());
 
-            List<Role> roles = requestContext.event().getGuild().getRolesByName(roleName, true);
+            if (roles.isEmpty()) {
+                String roleName = arguments.get(1).trim();
+                roles.addAll(requestContext.event().getGuild().getRolesByName(roleName, true));
+            }
+
+            String user = arguments.get(0);
 
             if (roles.isEmpty()) {
                 return;

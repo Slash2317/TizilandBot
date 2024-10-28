@@ -73,7 +73,7 @@ public class InfoRequestHandler {
                 .setAuthor(member.getUser().getGlobalName(), null, member.getEffectiveAvatarUrl())
                 .addField("Discord name", member.getUser().getName(), false);
 
-        boolean isStaff = member.getRoles().stream().anyMatch(r -> r.getName().toLowerCase().contains("staff"));
+        boolean isStaff = member.getRoles().stream().anyMatch(r -> r.getName().toLowerCase().contains("staff") && !r.getName().equalsIgnoreCase("ex-staff"));
         if (isStaff) {
             embedBuilder.setDescription(":white_check_mark: ***Staff member***");
         }
