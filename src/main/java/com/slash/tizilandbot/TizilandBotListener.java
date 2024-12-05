@@ -1,10 +1,16 @@
 package com.slash.tizilandbot;
 
+import com.slash.tizilandbot.domain.ChannelInfo;
+import com.slash.tizilandbot.domain.Data;
 import com.slash.tizilandbot.handler.*;
 import com.slash.tizilandbot.request.CommandGroup;
 import com.slash.tizilandbot.request.RequestContext;
+import com.slash.tizilandbot.service.DataRepository;
+import com.slash.tizilandbot.service.DataRepositoryImpl;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -20,16 +26,18 @@ import java.util.List;
 
 public class TizilandBotListener extends ListenerAdapter {
 
-    private InfoRequestHandler infoRequestHandler;
-    private ModerationRequestHandler moderationRequestHandler;
-    private MiscRequestHandler miscRequestHandler;
-    private TizilandRequestHandler tizilandRequestHandler;
+    private final InfoRequestHandler infoRequestHandler;
+    private final ModerationRequestHandler moderationRequestHandler;
+    private final MiscRequestHandler miscRequestHandler;
+    private final TizilandRequestHandler tizilandRequestHandler;
+    private final DataRepository dataRepository;
 
     public TizilandBotListener() {
         this.infoRequestHandler = new InfoRequestHandler();
         this.moderationRequestHandler = new ModerationRequestHandler();
         this.miscRequestHandler = new MiscRequestHandler();
         this.tizilandRequestHandler = new TizilandRequestHandler();
+        this.dataRepository = new DataRepositoryImpl();
     }
 
     @Override
@@ -52,6 +60,9 @@ public class TizilandBotListener extends ListenerAdapter {
             case UNBAN -> moderationRequestHandler.handleUnbanCommand(requestContext);
             case ROLE_GIVE -> moderationRequestHandler.handleRoleGiveCommand(requestContext);
             case ROLE_REMOVE -> moderationRequestHandler.handleRoleRemoveCommand(requestContext);
+            case PING_IN -> moderationRequestHandler.handlePingInCommand(requestContext);
+            case REMOVE_PING_IN -> moderationRequestHandler.handleRemovePingInCommand(requestContext);
+            case VIEW_PING_IN -> moderationRequestHandler.handleViewPingInCommand(requestContext);
             case MEMBER_INFO -> infoRequestHandler.handleMemberInfoCommand(requestContext);
             case SERVER_INFO -> infoRequestHandler.handleServerInfoCommand(requestContext);
             case INVITE -> tizilandRequestHandler.handleInviteCommand(requestContext);
@@ -95,5 +106,21 @@ public class TizilandBotListener extends ListenerAdapter {
         List<CommandData> commandData = new ArrayList<>();
         commandData.add(Commands.slash("help", "Gives info about how to use this bot"));
         event.getGuild().updateCommands().addCommands(commandData).queue();
+    }
+
+    @Override
+    public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+        Data data = dataRepository.loadData();
+        if (data.getGhostPingChannels().isEmpty()) {
+            return;
+        }
+
+        String user = event.getMember().getAsMention();
+        for (ChannelInfo channelInfo : data.getGhostPingChannels()) {
+            TextChannel channel = event.getGuild().getTextChannelById(channelInfo.getId());
+            if (channel != null) {
+                channel.sendMessage(user).queue(message -> message.delete().queue());
+            }
+        }
     }
 }
