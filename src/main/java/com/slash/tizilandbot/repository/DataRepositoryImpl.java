@@ -1,4 +1,4 @@
-package com.slash.tizilandbot.service;
+package com.slash.tizilandbot.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;

@@ -4,8 +4,8 @@ import com.slash.tizilandbot.domain.ChannelInfo;
 import com.slash.tizilandbot.domain.Data;
 import com.slash.tizilandbot.exception.InvalidPermissionException;
 import com.slash.tizilandbot.request.RequestContext;
-import com.slash.tizilandbot.service.DataRepository;
-import com.slash.tizilandbot.service.DataRepositoryImpl;
+import com.slash.tizilandbot.repository.DataRepository;
+import com.slash.tizilandbot.repository.DataRepositoryImpl;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -480,7 +480,7 @@ public class ModerationRequestHandler {
 
         Optional<Role> staffRoleOptional = roles.stream().filter(r -> r.getName().toLowerCase().contains("staff") && !r.getName().toLowerCase().contains("ex-staff")).findFirst();
 
-        if (staffRoleOptional.isEmpty()) {
+        if (staffRoleOptional.isEmpty() || requestContext.event().getMember() == null || requestContext.event().getMember().getRoles().isEmpty()) {
             return false;
         }
 

@@ -1,4 +1,4 @@
-package com.slash.tizilandbot.service;
+package com.slash.tizilandbot.repository;
 
 import com.slash.tizilandbot.domain.Data;
 
