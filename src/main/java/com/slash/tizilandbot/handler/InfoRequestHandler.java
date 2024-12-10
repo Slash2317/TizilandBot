@@ -2,6 +2,7 @@ package com.slash.tizilandbot.handler;
 
 import com.slash.tizilandbot.request.RequestContext;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -73,7 +74,7 @@ public class InfoRequestHandler {
                 .setAuthor(member.getUser().getGlobalName(), null, member.getEffectiveAvatarUrl())
                 .addField("Discord name", member.getUser().getName(), false);
 
-        boolean isStaff = member.getRoles().stream().anyMatch(r -> r.getName().toLowerCase().contains("staff") && !r.getName().toLowerCase().contains("ex-staff"));
+        boolean isStaff = isStaff(member);
         if (isStaff) {
             embedBuilder.setDescription(":white_check_mark: ***Staff member***");
         }
@@ -113,5 +114,21 @@ public class InfoRequestHandler {
 
     private String getFormattedTime(OffsetDateTime offsetDateTime, String format) {
         return "<t:" + offsetDateTime.toEpochSecond()+ ":" + format + ">";
+    }
+
+    private boolean isStaff(Member member) {
+        if (member == null) {
+            return false;
+        }
+        if (member.isOwner()) {
+            return true;
+        }
+        List<Role> roles = member.getRoles();
+        for (Role role : roles) {
+            if (role.hasPermission(Permission.ADMINISTRATOR)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

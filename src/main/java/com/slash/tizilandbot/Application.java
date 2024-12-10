@@ -1,5 +1,8 @@
 package com.slash.tizilandbot;
 
+import com.slash.tizilandbot.domain.Data;
+import com.slash.tizilandbot.repository.DataRepository;
+import com.slash.tizilandbot.repository.DataRepositoryImpl;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -18,18 +21,28 @@ public class Application {
         Properties props = new Properties();
         try {
             props.load(Application.class.getClassLoader().getResourceAsStream("config-" + env + ".properties"));
-
-            TizilandBotListener tizilandBotListener = new TizilandBotListener();
+            wipeDataIfNeeded();
 
             JDABuilder.createDefault(props.getProperty("token"))
                     .setActivity(Activity.playing("Join real tizi. - r!help"))
                     .enableIntents(GatewayIntent.GUILD_MEMBERS)
                     .enableIntents(GatewayIntent.MESSAGE_CONTENT)
-                    .addEventListeners(tizilandBotListener)
+                    .addEventListeners(new TizilandBotListener())
                     .build();
         }
         catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void wipeDataIfNeeded() {
+        DataRepository dataRepository = new DataRepositoryImpl();
+        try {
+            dataRepository.loadData();
+        }
+        catch (Exception e) {
+            System.out.println("Migrating data");
+            dataRepository.saveData(new Data());
         }
     }
 }

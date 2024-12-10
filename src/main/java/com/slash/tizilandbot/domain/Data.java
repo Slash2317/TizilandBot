@@ -1,17 +1,18 @@
 package com.slash.tizilandbot.domain;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Data {
 
-    private List<ChannelInfo> ghostPingChannels = new ArrayList<>();
+    private Map<String, List<ChannelInfo>> guildIdToGhostPingChannels = new HashMap<>();
 
-    public List<ChannelInfo> getGhostPingChannels() {
-        return ghostPingChannels;
+    public Map<String, List<ChannelInfo>> getGuildIdToGhostPingChannels() {
+        return guildIdToGhostPingChannels;
     }
 
-    public void setGhostPingChannels(List<ChannelInfo> ghostPingChannels) {
-        this.ghostPingChannels = ghostPingChannels;
+    public void setGuildIdToGhostPingChannels(Map<String, List<ChannelInfo>> guildIdToGhostPingChannels) {
+        this.guildIdToGhostPingChannels = guildIdToGhostPingChannels;
     }
 }

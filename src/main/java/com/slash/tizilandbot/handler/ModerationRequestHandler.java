@@ -364,27 +364,25 @@ public class ModerationRequestHandler {
     public void handlePingInCommand(RequestContext requestContext) {
         try {
             List<GuildChannel> channels = requestContext.event().getMessage().getMentions().getChannels();
-
             if (channels.isEmpty()) {
                 throw new IllegalArgumentException("No arguments supplied");
             }
-
-            if (requestContext.event().getMember() == null || !isStaff(requestContext)) {
+            if (requestContext.event().getMember() == null || !canManageChannels(requestContext)) {
                 throw new InvalidPermissionException("You do not have permission to add ghost ping channels");
             }
-
+            String guildId = requestContext.event().getGuild().getId();
             Data data = dataRepository.loadData();
+            data.getGuildIdToGhostPingChannels().putIfAbsent(guildId, new ArrayList<>());
+            List<ChannelInfo> guildChannelInfos = data.getGuildIdToGhostPingChannels().get(guildId);
 
             for (GuildChannel channel : channels) {
-                if (data.getGhostPingChannels().stream().anyMatch(c -> c.getId().equals(channel.getId()))) {
+                if (guildChannelInfos.stream().anyMatch(c -> c.getId().equals(channel.getId()))) {
                     continue;
                 }
-                data.getGhostPingChannels().add(new ChannelInfo(channel.getId(), channel.getName()));
+                guildChannelInfos.add(new ChannelInfo(channel.getId(), channel.getName()));
             }
-
             dataRepository.saveData(data);
-
-            String channelNames = data.getGhostPingChannels().stream().map(c -> "[" + c.getId() + ", " + c.getName() + "]").collect(Collectors.joining("\n"));
+            String channelNames = guildChannelInfos.stream().map(c -> "[" + c.getId() + ", " + c.getName() + "]").collect(Collectors.joining("\n"));
             requestContext.event().getChannel().sendMessage("Channel(s) added. The current ghost ping channels are:\n" + channelNames).queue();
         }
         catch (InvalidPermissionException e) {
@@ -398,30 +396,34 @@ public class ModerationRequestHandler {
     public void handleRemovePingInCommand(RequestContext requestContext) {
         try {
             List<GuildChannel> channels = requestContext.event().getMessage().getMentions().getChannels();
-
             if (channels.isEmpty()) {
                 throw new IllegalArgumentException("No arguments supplied");
             }
-
-            if (requestContext.event().getMember() == null || !isStaff(requestContext)) {
+            if (requestContext.event().getMember() == null || !canManageChannels(requestContext)) {
                 throw new InvalidPermissionException("You do not have permission to remove ghost ping channels");
             }
-
+            String guildId = requestContext.event().getGuild().getId();
             Data data = dataRepository.loadData();
-
-            for (GuildChannel channel : channels) {
-                Optional<ChannelInfo> channelInfoOptional = data.getGhostPingChannels().stream().filter(c -> c.getId().equals(channel.getId())).findFirst();
-                channelInfoOptional.ifPresent(c -> data.getGhostPingChannels().remove(c));
-            }
-
-            dataRepository.saveData(data);
-
-            if (data.getGhostPingChannels().isEmpty()) {
-                requestContext.event().getChannel().sendMessage("Channel(s) removed. There are currently no ghost ping channels.").queue();
+            if (data.getGuildIdToGhostPingChannels().containsKey(guildId)) {
+                List<ChannelInfo> guildChannelInfos = data.getGuildIdToGhostPingChannels().get(guildId);
+                for (GuildChannel channel : channels) {
+                    Optional<ChannelInfo> channelInfoOptional = guildChannelInfos.stream().filter(c -> c.getId().equals(channel.getId())).findFirst();
+                    channelInfoOptional.ifPresent(guildChannelInfos::remove);
+                }
+                if (guildChannelInfos.isEmpty()) {
+                    data.getGuildIdToGhostPingChannels().remove(guildId);
+                }
+                dataRepository.saveData(data);
+                if (guildChannelInfos.isEmpty()) {
+                    requestContext.event().getChannel().sendMessage("Channel(s) removed. There are currently no ghost ping channels.").queue();
+                }
+                else {
+                    String channelNames = guildChannelInfos.stream().map(c -> "[" + c.getId() + ", " + c.getName() + "]").collect(Collectors.joining("\n"));
+                    requestContext.event().getChannel().sendMessage("Channel(s) removed. The current ghost ping channels are:\n" + channelNames).queue();
+                }
             }
             else {
-                String channelNames = data.getGhostPingChannels().stream().map(c -> "[" + c.getId() + ", " + c.getName() + "]").collect(Collectors.joining("\n"));
-                requestContext.event().getChannel().sendMessage("Channel(s) removed. The current ghost ping channels are:\n" + channelNames).queue();
+                requestContext.event().getChannel().sendMessage("There are currently no ghost ping channels.").queue();
             }
         }
         catch (InvalidPermissionException e) {
@@ -434,18 +436,23 @@ public class ModerationRequestHandler {
 
     public void handleViewPingInCommand(RequestContext requestContext) {
         try {
-            if (requestContext.event().getMember() == null || !isStaff(requestContext)) {
+            if (requestContext.event().getMember() == null || !canManageChannels(requestContext)) {
                 throw new InvalidPermissionException("You do not have permission to view ghost ping channels");
             }
-
+            String guildId = requestContext.event().getGuild().getId();
             Data data = dataRepository.loadData();
-
-            if (data.getGhostPingChannels().isEmpty()) {
-                requestContext.event().getChannel().sendMessage("Channel(s) removed. There are currently no ghost ping channels.").queue();
+            if (data.getGuildIdToGhostPingChannels().containsKey(guildId)) {
+                List<ChannelInfo> guildChannelInfos = data.getGuildIdToGhostPingChannels().get(guildId);
+                if (guildChannelInfos.isEmpty()) {
+                    requestContext.event().getChannel().sendMessage("There are currently no ghost ping channels.").queue();
+                }
+                else {
+                    String channelNames = guildChannelInfos.stream().map(c -> "[" + c.getId() + ", " + c.getName() + "]").collect(Collectors.joining("\n"));
+                    requestContext.event().getChannel().sendMessage("The current ghost ping channels are:\n" + channelNames).queue();
+                }
             }
             else {
-                String channelNames = data.getGhostPingChannels().stream().map(c -> "[" + c.getId() + ", " + c.getName() + "]").collect(Collectors.joining("\n"));
-                requestContext.event().getChannel().sendMessage("The current ghost ping channels are:\n" + channelNames).queue();
+                requestContext.event().getChannel().sendMessage("There are currently no ghost ping channels.").queue();
             }
         }
         catch (InvalidPermissionException e) {
@@ -475,16 +482,20 @@ public class ModerationRequestHandler {
         return arguments;
     }
 
-    private boolean isStaff(RequestContext requestContext) {
-        List<Role> roles = requestContext.event().getGuild().getRoles();
-
-        Optional<Role> staffRoleOptional = roles.stream().filter(r -> r.getName().toLowerCase().contains("staff") && !r.getName().toLowerCase().contains("ex-staff")).findFirst();
-
-        if (staffRoleOptional.isEmpty() || requestContext.event().getMember() == null || requestContext.event().getMember().getRoles().isEmpty()) {
+    private boolean canManageChannels(RequestContext requestContext) {
+        Member member = requestContext.event().getMember();
+        if (member == null) {
             return false;
         }
-
-        int maxRolePos = requestContext.event().getMember().getRoles().stream().mapToInt(Role::getPosition).max().getAsInt();
-        return maxRolePos >= staffRoleOptional.get().getPosition();
+        if (member.isOwner()) {
+            return true;
+        }
+        List<Role> roles = member.getRoles();
+        for (Role role : roles) {
+            if (role.hasPermission(Permission.MANAGE_CHANNEL) || role.hasPermission(Permission.ADMINISTRATOR)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

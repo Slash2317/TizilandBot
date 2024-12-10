@@ -110,13 +110,18 @@ public class TizilandBotListener extends ListenerAdapter {
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+        String guildId = event.getGuild().getId();
         Data data = dataRepository.loadData();
-        if (data.getGhostPingChannels().isEmpty()) {
+        if (!data.getGuildIdToGhostPingChannels().containsKey(guildId)) {
+            return;
+        }
+        List<ChannelInfo> guildChannelInfos = data.getGuildIdToGhostPingChannels().get(guildId);
+        if (guildChannelInfos.isEmpty()) {
             return;
         }
 
         String user = event.getMember().getAsMention();
-        for (ChannelInfo channelInfo : data.getGhostPingChannels()) {
+        for (ChannelInfo channelInfo : guildChannelInfos) {
             TextChannel channel = event.getGuild().getTextChannelById(channelInfo.getId());
             if (channel != null) {
                 channel.sendMessage(user).queue(message -> message.delete().queue());
