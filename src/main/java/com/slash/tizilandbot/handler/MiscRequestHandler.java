@@ -5,17 +5,14 @@ import com.slash.tizilandbot.request.Command;
 import com.slash.tizilandbot.request.CommandGroup;
 import com.slash.tizilandbot.request.RequestContext;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 
 import java.awt.*;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -134,12 +131,12 @@ public class MiscRequestHandler {
     }
 
     public void handleRollDiceCommand(RequestContext requestContext) {
-        int sides = 6;
+        BigInteger sides = new BigInteger("6");
         if (requestContext.arguments() != null && !requestContext.arguments().isBlank()) {
             try {
-                sides = Integer.parseInt(requestContext.arguments());
-                if (sides < 1) {
-                    sides = 6;
+                sides = new BigInteger(requestContext.arguments());
+                if (sides.compareTo(BigInteger.ONE) < 0) {
+                    sides = new BigInteger("6");
                 }
             }
             catch (NumberFormatException ignored) {
@@ -147,13 +144,18 @@ public class MiscRequestHandler {
             }
         }
 
-        int option = (int) Math.floor(Math.random() * sides) + 1;
-        requestContext.event().getChannel().sendMessage(":game_die: " + option).queue();
+        BigInteger randomNumber;
+        Random random = new Random();
+        do {
+            randomNumber = new BigInteger(sides.bitLength(), random);
+        } while (randomNumber.compareTo(sides) >= 0);
+
+        requestContext.event().getChannel().sendMessage(":game_die: " + randomNumber).queue();
     }
 
     public void handleEchoCommand(RequestContext requestContext) {
         if (requestContext.arguments() != null && !requestContext.arguments().isBlank()) {
-            requestContext.event().getChannel().sendMessage(requestContext.arguments()).queue();
+            requestContext.event().getChannel().sendMessage(requestContext.arguments()).queue(m -> requestContext.event().getMessage().delete().queue());
         }
     }
 }
