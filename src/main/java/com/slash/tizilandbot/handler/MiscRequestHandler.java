@@ -21,8 +21,8 @@ public class MiscRequestHandler {
 
     public void handleHelpCommand(RequestContext requestContext) {
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("real tizi. Bot | Commands")
-                .setAuthor("real tizi. Bot")
+        embedBuilder.setTitle("Tiziland Bot | Commands")
+                .setAuthor("Tiziland Bot")
                 .setColor(Color.decode("#a020f0"))
                 .setDescription("Click on a button to see our commands that are pertaining to each category.");
 
@@ -39,7 +39,7 @@ public class MiscRequestHandler {
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle(Emoji.fromFormatted(commandGroup.getEmojiUnicode()).getFormatted() + " " + commandGroup.getTitle() + " | Commands")
-                .setAuthor("real tizi. Bot")
+                .setAuthor("Tiziland Bot")
                 .setColor(Color.decode("#a020f0"))
                 .setDescription(commands.stream().map(Command::getFullDescription).collect(Collectors.joining("\n")));
 
@@ -59,7 +59,7 @@ public class MiscRequestHandler {
             }
 
             if (userOption == RPSOption.SPOCK || userOption == RPSOption.LIZARD) {
-                requestContext.event().getChannel().sendMessage("...you're not like the rest. Try r!rpsls next time").queue();
+                requestContext.event().getChannel().sendMessage("...you're not like the rest. Try t!rpsls next time").queue();
                 return;
             }
 

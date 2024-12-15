@@ -14,10 +14,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -372,17 +369,22 @@ public class ModerationRequestHandler {
             }
             String guildId = requestContext.event().getGuild().getId();
             Data data = dataRepository.loadData();
-            data.getGuildIdToGhostPingChannels().putIfAbsent(guildId, new ArrayList<>());
-            List<ChannelInfo> guildChannelInfos = data.getGuildIdToGhostPingChannels().get(guildId);
+            if (data == null) {
+                data = new Data();
+            }
+
+            data.getGuildIdToGhostPingChannelIds().putIfAbsent(guildId, new ArrayList<>());
+            List<String> guildChannelIds = data.getGuildIdToGhostPingChannelIds().get(guildId);
 
             for (GuildChannel channel : channels) {
-                if (guildChannelInfos.stream().anyMatch(c -> c.getId().equals(channel.getId()))) {
+                if (guildChannelIds.contains(channel.getId())) {
                     continue;
                 }
-                guildChannelInfos.add(new ChannelInfo(channel.getId(), channel.getName()));
+                guildChannelIds.add(channel.getId());
             }
             dataRepository.saveData(data);
-            String channelNames = guildChannelInfos.stream().map(c -> "[" + c.getId() + ", " + c.getName() + "]").collect(Collectors.joining("\n"));
+
+            String channelNames = data.getChannelNamesDisplay(requestContext.event().getGuild());
             requestContext.event().getChannel().sendMessage("Channel(s) added. The current ghost ping channels are:\n" + channelNames).queue();
         }
         catch (InvalidPermissionException e) {
@@ -404,21 +406,24 @@ public class ModerationRequestHandler {
             }
             String guildId = requestContext.event().getGuild().getId();
             Data data = dataRepository.loadData();
-            if (data.getGuildIdToGhostPingChannels().containsKey(guildId)) {
-                List<ChannelInfo> guildChannelInfos = data.getGuildIdToGhostPingChannels().get(guildId);
+            if (data == null) {
+                data = new Data();
+            }
+
+            if (data.getGuildIdToGhostPingChannelIds().containsKey(guildId)) {
+                List<String> guildChannelIds = data.getGuildIdToGhostPingChannelIds().get(guildId);
                 for (GuildChannel channel : channels) {
-                    Optional<ChannelInfo> channelInfoOptional = guildChannelInfos.stream().filter(c -> c.getId().equals(channel.getId())).findFirst();
-                    channelInfoOptional.ifPresent(guildChannelInfos::remove);
+                    guildChannelIds.remove(channel.getId());
                 }
-                if (guildChannelInfos.isEmpty()) {
-                    data.getGuildIdToGhostPingChannels().remove(guildId);
+                if (guildChannelIds.isEmpty()) {
+                    data.getGuildIdToGhostPingChannelIds().remove(guildId);
                 }
                 dataRepository.saveData(data);
-                if (guildChannelInfos.isEmpty()) {
+                if (guildChannelIds.isEmpty()) {
                     requestContext.event().getChannel().sendMessage("Channel(s) removed. There are currently no ghost ping channels.").queue();
                 }
                 else {
-                    String channelNames = guildChannelInfos.stream().map(c -> "[" + c.getId() + ", " + c.getName() + "]").collect(Collectors.joining("\n"));
+                    String channelNames = data.getChannelNamesDisplay(requestContext.event().getGuild());
                     requestContext.event().getChannel().sendMessage("Channel(s) removed. The current ghost ping channels are:\n" + channelNames).queue();
                 }
             }
@@ -441,13 +446,17 @@ public class ModerationRequestHandler {
             }
             String guildId = requestContext.event().getGuild().getId();
             Data data = dataRepository.loadData();
-            if (data.getGuildIdToGhostPingChannels().containsKey(guildId)) {
-                List<ChannelInfo> guildChannelInfos = data.getGuildIdToGhostPingChannels().get(guildId);
-                if (guildChannelInfos.isEmpty()) {
+            if (data == null) {
+                data = new Data();
+            }
+
+            if (data.getGuildIdToGhostPingChannelIds().containsKey(guildId)) {
+                List<String> guildChannelIds = data.getGuildIdToGhostPingChannelIds().get(guildId);
+                if (guildChannelIds.isEmpty()) {
                     requestContext.event().getChannel().sendMessage("There are currently no ghost ping channels.").queue();
                 }
                 else {
-                    String channelNames = guildChannelInfos.stream().map(c -> "[" + c.getId() + ", " + c.getName() + "]").collect(Collectors.joining("\n"));
+                    String channelNames = data.getChannelNamesDisplay(requestContext.event().getGuild());
                     requestContext.event().getChannel().sendMessage("The current ghost ping channels are:\n" + channelNames).queue();
                 }
             }

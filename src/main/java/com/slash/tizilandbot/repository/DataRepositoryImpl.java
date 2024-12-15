@@ -12,7 +12,7 @@ public class DataRepositoryImpl implements DataRepository {
     public Data loadData() {
         File file = new File(getFilepath());
         if (!file.exists()) {
-            return new Data();
+            return null;
         }
         else {
             try(BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -62,6 +62,6 @@ public class DataRepositoryImpl implements DataRepository {
     }
 
     private String getFilepath() {
-        return System.getProperty("user.home") + File.separator + "RealTiziBot" + File.separator + "data.json";
+        return System.getProperty("user.home") + File.separator + "TizilandBot" + File.separator + "data.json";
     }
 }

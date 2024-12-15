@@ -87,9 +87,9 @@ public class TizilandBotListener extends ListenerAdapter {
             embedBuilder.setColor(Color.decode("#a020f0"))
                     .setDescription("""
                         **Welcome!** :smiley:
-                        Currently, this bot, real tizi. Bot, does **not** support slash commands for coding and modifying to be easier.
-                        Instead, please use the prefix `r!` in all your commands. For example, t!help.
-                        **For the actual commands list, please use the r!help command in any chat this bot is enabled on.**""");
+                        Currently, this bot, Tiziland Bot, does **not** support slash commands for coding and modifying to be easier.
+                        Instead, please use the prefix `t!` in all your commands. For example, t!help.
+                        **For the actual commands list, please use the t!help command in any chat this bot is enabled on.**""");
 
             event.replyEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList()).queue();
         }
@@ -112,17 +112,17 @@ public class TizilandBotListener extends ListenerAdapter {
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         String guildId = event.getGuild().getId();
         Data data = dataRepository.loadData();
-        if (!data.getGuildIdToGhostPingChannels().containsKey(guildId)) {
+        if (data == null || !data.getGuildIdToGhostPingChannelIds().containsKey(guildId)) {
             return;
         }
-        List<ChannelInfo> guildChannelInfos = data.getGuildIdToGhostPingChannels().get(guildId);
-        if (guildChannelInfos.isEmpty()) {
+        List<String> guildChannelIds = data.getGuildIdToGhostPingChannelIds().get(guildId);
+        if (guildChannelIds.isEmpty()) {
             return;
         }
 
         String user = event.getMember().getAsMention();
-        for (ChannelInfo channelInfo : guildChannelInfos) {
-            TextChannel channel = event.getGuild().getTextChannelById(channelInfo.getId());
+        for (String channelId : guildChannelIds) {
+            TextChannel channel = event.getGuild().getTextChannelById(channelId);
             if (channel != null) {
                 channel.sendMessage(user).queue(message -> message.delete().queue());
             }

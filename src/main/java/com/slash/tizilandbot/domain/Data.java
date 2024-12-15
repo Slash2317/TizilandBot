@@ -1,18 +1,41 @@
 package com.slash.tizilandbot.domain;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Data {
 
-    private Map<String, List<ChannelInfo>> guildIdToGhostPingChannels = new HashMap<>();
+    private Map<String, List<String>> guildIdToGhostPingChannelIds = new HashMap<>();
 
-    public Map<String, List<ChannelInfo>> getGuildIdToGhostPingChannels() {
-        return guildIdToGhostPingChannels;
+    public Map<String, List<String>> getGuildIdToGhostPingChannelIds() {
+        return guildIdToGhostPingChannelIds;
     }
 
-    public void setGuildIdToGhostPingChannels(Map<String, List<ChannelInfo>> guildIdToGhostPingChannels) {
-        this.guildIdToGhostPingChannels = guildIdToGhostPingChannels;
+    public void setGuildIdToGhostPingChannelIds(Map<String, List<String>> guildIdToGhostPingChannelIds) {
+        this.guildIdToGhostPingChannelIds = guildIdToGhostPingChannelIds;
+    }
+
+    public String getChannelNamesDisplay(Guild guild) {
+        LinkedHashMap<String, GuildChannel> idToChannel = getChannels(guildIdToGhostPingChannelIds.get(guild.getId()), guild);
+        return idToChannel.entrySet().stream().map(e -> "[" + e.getKey() + ", " + e.getValue().getName() + "]").collect(Collectors.joining("\n"));
+    }
+
+    private LinkedHashMap<String, GuildChannel> getChannels(List<String> channelIds, Guild guild) {
+        LinkedHashMap<String, GuildChannel> idToChannel = new LinkedHashMap<>();
+        for (String id : channelIds) {
+            idToChannel.put(id, guild.getGuildChannelById(id));
+        }
+        return idToChannel;
+    }
+
+    public static Data from(DataOld dataOld) {
+        Data data = new Data();
+        for (Map.Entry<String, List<ChannelInfo>> entry : dataOld.getGuildIdToGhostPingChannels().entrySet()) {
+            data.getGuildIdToGhostPingChannelIds().put(entry.getKey(), entry.getValue().stream().map(ChannelInfo::getId).toList());
+        }
+        return data;
     }
 }
