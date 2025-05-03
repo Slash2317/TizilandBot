@@ -7,5 +7,8 @@ build
 
 # TizilandBot
 DiscordTizilandBot_*
-src/main/resources/config-dev.properties
-src/main/resources/config-prod.properties
+tisilandbot/src/main/resources/application-dev.properties
+tizilandbot/src/main/resources/application.properties
+
+# Liquibase
+liquibase/src/main/resources/dbconfig-dev.properties

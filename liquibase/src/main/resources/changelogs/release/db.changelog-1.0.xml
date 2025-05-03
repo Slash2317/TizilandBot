@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet author="slash" id="1">
+        <createTable tableName="discord_user">
+            <column name="discord_user_id" type="INT" autoIncrement="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="member_discord_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="points" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="discord_user" columnNames="discord_user_id" constraintName="pk_discord_user__discord_user_id"/>
+        <addUniqueConstraint tableName="discord_user" columnNames="member_discord_id" constraintName="uq_discord_user__member_discord_id"/>
+    </changeSet>
+
+    <changeSet author="slash" id="2">
+        <createTable tableName="points_question">
+            <column name="points_question_id" type="INT" autoIncrement="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="question" type="NVARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="points_question" columnNames="points_question_id" constraintName="pk_points_question__points_question_id"/>
+    </changeSet>
+
+    <changeSet author="slash" id="3">
+        <createTable tableName="points_question_answer">
+            <column name="points_question_answer_id" type="INT" autoIncrement="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="points_question_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="answer" type="NVARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="points_question_answer" columnNames="points_question_answer_id" constraintName="pk_points_question_answer__points_question_answer_id"/>
+        <addForeignKeyConstraint baseTableName="points_question_answer" baseColumnNames="points_question_id"
+                                 referencedTableName="points_question" referencedColumnNames="points_question_id"
+                                 constraintName="fk_points_question_answer__points_question__points_question_id"/>
+    </changeSet>
+
+    <changeSet author="slash" id="4">
+        <createTable tableName="ghost_ping_channel">
+            <column name="ghost_ping_channel_id" type="INT" autoIncrement="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="guild_discord_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="channel_discord_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="ghost_ping_channel" columnNames="ghost_ping_channel_id" constraintName="pk_ghost_ping_channel__ghost_ping_channel_id"/>
+        <addUniqueConstraint tableName="ghost_ping_channel" columnNames="channel_discord_id" constraintName="uq_ghost_ping_channel__channel_discord_id"/>
+    </changeSet>
+</databaseChangeLog>
