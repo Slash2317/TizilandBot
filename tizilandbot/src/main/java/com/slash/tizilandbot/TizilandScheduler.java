@@ -29,7 +29,10 @@ public class TizilandScheduler {
     private void run() {
         try {
             for (Guild guild : Application.getJda().getGuilds()) {
-                pointEventService.handleExpiredEvents();
+                boolean eventsExpired = pointEventService.handleExpiredEvents();
+                if (eventsExpired) {
+                    continue;
+                }
 
                 int chance = (int) (Math.random() * 100);
                 if (chance < percentageForAction) {

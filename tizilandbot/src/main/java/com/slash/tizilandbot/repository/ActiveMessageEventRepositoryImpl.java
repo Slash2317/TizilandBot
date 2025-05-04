@@ -10,6 +10,8 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ActiveMessageEventRepositoryImpl implements ActiveMessageEventRepository {
 
@@ -38,15 +40,15 @@ public class ActiveMessageEventRepositoryImpl implements ActiveMessageEventRepos
     }
 
     @Override
-    public List<ActiveMessageEvent> deleteExpiredEvents() {
+    public List<ActiveMessageEvent> findExpiredEvents() {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
             conn = Application.getDataSource().getConnection();
             stmt = conn.prepareStatement("""
-                    DELETE FROM active_message_event WHERE time_created < current_timestamp - (5 * interval '1 minute')
-                    RETURNING active_message_event_id, guild_discord_id, channel_discord_id, message_discord_id, event_type, points, time_created""");
+                    SELECT active_message_event_id, guild_discord_id, channel_discord_id, message_discord_id, event_type, points, time_created
+                    FROM active_message_event WHERE time_created < current_timestamp - (5 * interval '1 minute')""");
             rs = stmt.executeQuery();
 
             List<ActiveMessageEvent> activeMessageEvents = new ArrayList<>();
@@ -61,6 +63,29 @@ public class ActiveMessageEventRepositoryImpl implements ActiveMessageEventRepos
         }
         finally {
             DbUtils.closeQuietly(conn, stmt, rs);
+        }
+    }
+
+    @Override
+    public void deleteEventsByIdIn(List<Integer> ids) {
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            conn = Application.getDataSource().getConnection();
+
+            String idsString = ids.stream().map(Objects::toString).collect(Collectors.joining(","));
+            String deleteButtonCountsSql = String.format("DELETE FROM active_message_event_button_count WHERE active_message_event_id IN (%s)", idsString);
+            String deleteEventsSql = String.format("DELETE FROM active_message_event WHERE active_message_event_id IN (%s)", idsString);
+            stmt = conn.createStatement();
+            stmt.executeUpdate(deleteButtonCountsSql);
+            stmt.executeUpdate(deleteEventsSql);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        finally {
+            DbUtils.closeQuietly(conn, stmt, null);
         }
     }
 

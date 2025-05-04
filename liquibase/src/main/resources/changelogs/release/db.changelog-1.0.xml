@@ -91,5 +91,31 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <addPrimaryKey tableName="active_message_event" columnNames="active_message_event_id" constraintName="pk_active_message_event__active_message_event_id"/>
+        <addUniqueConstraint tableName="active_message_event" columnNames="message_discord_id" constraintName="uq_active_message_event__message_discord_id"/>
+    </changeSet>
+
+    <changeSet author="slash" id="6">
+        <createTable tableName="active_message_event_button_count">
+            <column name="active_message_event_button_count_id" type="INT" autoIncrement="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="active_message_event_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message_discord_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="member_discord_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="count" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="active_message_event_button_count" columnNames="active_message_event_button_count_id" constraintName="pk_active_message_event_button_count__active_message_event_button_count_id"/>
+        <addForeignKeyConstraint baseTableName="active_message_event_button_count" baseColumnNames="active_message_event_id"
+                                 referencedTableName="active_message_event" referencedColumnNames="active_message_event_id"
+                                 constraintName="fk_active_message_event_button_count__active_message_event__active_message_event_id"/>
     </changeSet>
 </databaseChangeLog>
