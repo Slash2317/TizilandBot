@@ -48,7 +48,7 @@ public class ActiveMessageEventRepositoryImpl implements ActiveMessageEventRepos
             conn = Application.getDataSource().getConnection();
             stmt = conn.prepareStatement("""
                     SELECT active_message_event_id, guild_discord_id, channel_discord_id, message_discord_id, event_type, points, time_created
-                    FROM active_message_event WHERE time_created < current_timestamp - (5 * interval '1 minute')""");
+                    FROM active_message_event WHERE time_created <= current_timestamp - (3 * interval '1 minute')""");
             rs = stmt.executeQuery();
 
             List<ActiveMessageEvent> activeMessageEvents = new ArrayList<>();

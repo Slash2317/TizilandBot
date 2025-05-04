@@ -163,7 +163,7 @@ public class PointEventServiceImpl implements PointEventService {
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setColor(Color.decode(System.getProperty("embed.event_over_color")))
                     .setTitle(":blobcry: **Event Ended**")
-                    .setDescription("No one " + action + " for 5 minutes so this event has expired.");
+                    .setDescription("No one " + action + " for 3 minutes so this event has expired.");
 
             textChannel.sendMessageEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList()).queue();
         }
