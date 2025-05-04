@@ -7,6 +7,8 @@ import com.slash.tizilandbot.repository.GhostPingChannelRepositoryImpl;
 import com.slash.tizilandbot.request.CommandGroup;
 import com.slash.tizilandbot.request.MessageRequestContext;
 import com.slash.tizilandbot.request.RequestContext;
+import com.slash.tizilandbot.service.PointEventService;
+import com.slash.tizilandbot.service.PointEventServiceImpl;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
@@ -14,6 +16,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -25,12 +28,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class TizilandBotListener extends ListenerAdapter {
-
     private final InfoRequestHandler infoRequestHandler;
     private final ModerationRequestHandler moderationRequestHandler;
     private final MiscRequestHandler miscRequestHandler;
     private final TizilandRequestHandler tizilandRequestHandler;
     private final GhostPingChannelRepository ghostPingChannelRepository;
+    private final PointEventService pointEventService;
 
     public TizilandBotListener() {
         this.infoRequestHandler = new InfoRequestHandler();
@@ -38,6 +41,7 @@ public class TizilandBotListener extends ListenerAdapter {
         this.miscRequestHandler = new MiscRequestHandler();
         this.tizilandRequestHandler = new TizilandRequestHandler();
         this.ghostPingChannelRepository = new GhostPingChannelRepositoryImpl();
+        this.pointEventService = new PointEventServiceImpl();
     }
 
     @Override
@@ -132,5 +136,10 @@ public class TizilandBotListener extends ListenerAdapter {
                 channel.sendMessage(user).queue(message -> message.delete().queue());
             }
         }
+    }
+
+    @Override
+    public void onMessageReactionAdd(MessageReactionAddEvent event) {
+        pointEventService.handleReaction(event);
     }
 }

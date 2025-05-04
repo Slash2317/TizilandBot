@@ -44,7 +44,6 @@ public class DiscordUserRepositoryImpl implements DiscordUserRepository {
     public void insert(DiscordUser discordUser) {
         Connection conn = null;
         PreparedStatement stmt = null;
-        ResultSet rs = null;
         try {
             conn = Application.getDataSource().getConnection();
             stmt = conn.prepareStatement("INSERT INTO discord_user(member_discord_id, points) VALUES(?, ?)");
@@ -57,7 +56,7 @@ public class DiscordUserRepositoryImpl implements DiscordUserRepository {
             throw new RuntimeException(e);
         }
         finally {
-            DbUtils.closeQuietly(conn, stmt, rs);
+            DbUtils.closeQuietly(conn, stmt, null);
         }
     }
 

@@ -34,6 +34,8 @@ public class Application {
             throw e;
         }
         System.setProperty("embed.color", props.getProperty("embed.color", "#5566f2"));
+        System.setProperty("embed.event_over_color", props.getProperty("embed.event_over_color", "#e74d3c"));
+        System.setProperty("general_channel_id", props.getProperty("general_channel_id"));
         System.setProperty("prefix", props.getProperty("prefix", "t!"));
 
         dataSource = createDataSource(props);
@@ -45,7 +47,9 @@ public class Application {
             throw e;
         }
 
-        //set up scheduler
+        TizilandScheduler scheduler = new TizilandScheduler();
+        scheduler.start();
+        System.out.println("Bot started successfully!");
     }
 
     private static DataSource createDataSource(Properties props) {
