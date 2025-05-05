@@ -220,7 +220,7 @@ public class PointEventServiceImpl implements PointEventService {
         }
 
         List<ActiveMessageEvent> buttonEvents = expiredEvents.stream().filter(e -> e.getEventType() == MessageEventType.BUTTON).toList();
-        List<ActiveMessageEvent> successfulEvents = handleExpiredButtonEvents(buttonEvents);
+        List<ActiveMessageEvent> successfulEvents = handleExpiredClickButtonEvents(buttonEvents);
 
         messageEventRepository.deleteEventsByIdIn(expiredEvents.stream().map(ActiveMessageEvent::getId).toList());
         for (ActiveMessageEvent expiredEvent : expiredEvents) {
@@ -256,12 +256,13 @@ public class PointEventServiceImpl implements PointEventService {
         return true;
     }
 
-    private List<ActiveMessageEvent> handleExpiredButtonEvents(List<ActiveMessageEvent> buttonEvents) {
+    private List<ActiveMessageEvent> handleExpiredClickButtonEvents(List<ActiveMessageEvent> buttonEvents) {
         List<ActiveMessageEvent> successfulEvents = new ArrayList<>();
         for (ActiveMessageEvent buttonEvent : buttonEvents) {
             MemberButtonCount memberButtonCount = buttonCountRepository.findMaxMemberIdByEventId(buttonEvent.getId());
             if (memberButtonCount != null) {
-                addPointsToUser(new BigInteger(String.valueOf(memberButtonCount.count() * 100)), memberButtonCount.memberId());
+                Integer points = memberButtonCount.count() * 100;
+                addPointsToUser(new BigInteger(points.toString()), memberButtonCount.memberId());
                 successfulEvents.add(buttonEvent);
 
                 Guild guild = Application.getJda().getGuildById(buttonEvent.getGuildDiscordId());
@@ -277,7 +278,7 @@ public class PointEventServiceImpl implements PointEventService {
                 embedBuilder.setColor(Color.decode(System.getProperty("embed.event_over_color")))
                         .setTitle(":blobcry: **Event Ended**")
                         .setDescription("Congratulations <@" + memberButtonCount.memberId() + ">! You clicked the button " + memberButtonCount.count() + " times.")
-                        .appendDescription("\nYou just received **" + buttonEvent.getPoints() + " Points!!**");
+                        .appendDescription("\nYou just received **" + points + " Points!!**");
                 textChannel.sendMessageEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList()).queue();
             }
         }

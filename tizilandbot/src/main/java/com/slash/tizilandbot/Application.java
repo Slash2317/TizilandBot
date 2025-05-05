@@ -36,6 +36,7 @@ public class Application {
         System.setProperty("embed.color", props.getProperty("embed.color", "#5566f2"));
         System.setProperty("embed.event_over_color", props.getProperty("embed.event_over_color", "#e74d3c"));
         System.setProperty("general_channel_id", props.getProperty("general_channel_id"));
+        System.setProperty("active_channel_id", props.getProperty("active_channel_id"));
         System.setProperty("prefix", props.getProperty("prefix", "t!"));
 
         dataSource = createDataSource(props);
