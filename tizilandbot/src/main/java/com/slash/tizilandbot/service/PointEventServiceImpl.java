@@ -1,10 +1,7 @@
 package com.slash.tizilandbot.service;
 
 import com.slash.tizilandbot.Application;
-import com.slash.tizilandbot.domain.ActiveMessageEvent;
-import com.slash.tizilandbot.domain.DiscordUser;
-import com.slash.tizilandbot.domain.MemberButtonCount;
-import com.slash.tizilandbot.domain.MessageEventType;
+import com.slash.tizilandbot.domain.*;
 import com.slash.tizilandbot.repository.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -27,6 +24,33 @@ import java.util.List;
 
 public class PointEventServiceImpl implements PointEventService {
     private static BigInteger MAX_VALUE = new BigInteger("2147483647");
+    private static List<EventQuestion> questions = List.of(
+            new EventQuestion("When is Frodo's Birthday?", List.of(
+                    new EventQuestionAnswer("May 16th", false),
+                    new EventQuestionAnswer("June 7th", false),
+                    new EventQuestionAnswer("June 16th", true)
+            )),
+            new EventQuestion("When was the server created?", List.of(
+                    new EventQuestionAnswer("May 22nd", false),
+                    new EventQuestionAnswer("May 12th", false),
+                    new EventQuestionAnswer("May 16th", true)
+            )),
+            new EventQuestion("When is Tizi's Birthday?", List.of(
+                    new EventQuestionAnswer("May 19th", false),
+                    new EventQuestionAnswer("May 22nd", true),
+                    new EventQuestionAnswer("May 2nd", false)
+            )),
+            new EventQuestion("Which of these names did Tiziland previously have?", List.of(
+                    new EventQuestionAnswer("Tizi's Place", false),
+                    new EventQuestionAnswer("real tizi.", true),
+                    new EventQuestionAnswer("Frodo's Chill", false)
+            )),
+            new EventQuestion("What was our previous ARG named?", List.of(
+                    new EventQuestionAnswer("TYL", false),
+                    new EventQuestionAnswer("16.05.24", true),
+                    new EventQuestionAnswer("ESW", false)
+            ))
+    );
 
     private final ActiveMessageEventRepository messageEventRepository;
     private final ActiveMessageEventButtonCountRepository buttonCountRepository;
@@ -51,11 +75,14 @@ public class PointEventServiceImpl implements PointEventService {
         TextChannel channel = guild.getTextChannelById(channelDiscordId);
 
         int chance = (int) (Math.random() * 100);
-        if (chance < 50) {
+        if (chance < 40) {
             sendReactMessage(channel);
         }
+        else if (chance < 80){
+            sendClickButtonMessage(channel);
+        }
         else {
-            sendButtonMessage(channel);
+            sendQuestionMessage(channel);
         }
     }
 
@@ -66,7 +93,7 @@ public class PointEventServiceImpl implements PointEventService {
                 .setTitle(":tada_purple: **React first to this message for points!**")
                 .setDescription("React first to this message to get a certain amount of points!");
 
-        channel.sendMessageEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList()).queue(m -> createAndSaveMessageEvent(channel, m, MessageEventType.REACTION, 2000));
+        channel.sendMessageEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList()).queue(m -> createAndSaveMessageEvent(channel, m, MessageEventType.REACTION, 1000));
     }
 
     @Override
@@ -103,7 +130,7 @@ public class PointEventServiceImpl implements PointEventService {
     }
 
     @Override
-    public void sendButtonMessage(TextChannel channel) {
+    public void sendClickButtonMessage(TextChannel channel) {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle(":purple_siren: Click the buttons as many times as you can for points!")
                 .setColor(Color.decode("#a020f0"))
@@ -111,15 +138,17 @@ public class PointEventServiceImpl implements PointEventService {
 
         MessageCreateAction messageCreateAction = channel.sendMessageEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList());
         messageCreateAction.addActionRow(new ButtonImpl("button_message_event", "Click", ButtonStyle.PRIMARY, false, Emoji.fromFormatted("\uD83E\uDD11")));
-        messageCreateAction.queue(m -> createAndSaveMessageEvent(channel, m, MessageEventType.BUTTON, 500));
+        messageCreateAction.queue(m -> createAndSaveMessageEvent(channel, m, MessageEventType.BUTTON, 0));
     }
 
     @Override
-    public void handleButtonInteraction(ButtonInteractionEvent event) {
+    public void handleClickButtonInteraction(ButtonInteractionEvent event) {
         if (event.getMember() == null) {
+            event.getInteraction().deferEdit().queue();
             return;
         }
         if (event.getMessage().getTimeCreated().isBefore(OffsetDateTime.now().minusMinutes(5))) {
+            event.getInteraction().deferEdit().queue();
             return;
         }
 
@@ -127,6 +156,60 @@ public class PointEventServiceImpl implements PointEventService {
         if (!updated) {
             buttonCountRepository.insertButtonCount(event.getMessageIdLong(), event.getMember().getIdLong());
         }
+        event.getInteraction().deferEdit().queue();
+    }
+
+    @Override
+    public void sendQuestionMessage(TextChannel channel) {
+        int questionIndex = (int) (Math.random() * questions.size());
+        EventQuestion question = questions.get(questionIndex);
+
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle(":question: Answer correctly for points!")
+                .setColor(Color.decode("#a020f0"))
+                .setDescription(question.question());
+
+        MessageCreateAction messageCreateAction = channel.sendMessageEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList());
+        for (EventQuestionAnswer answer : question.answers()) {
+            String componentId = answer.correct() ? "question_correct" : "question_incorrect";
+            messageCreateAction.addActionRow(new ButtonImpl(componentId + question.answers().indexOf(answer), answer.answer(), ButtonStyle.PRIMARY, false, null));
+        }
+        messageCreateAction.queue(m -> createAndSaveMessageEvent(channel, m, MessageEventType.QUESTION, 2000));
+    }
+
+    @Override
+    public void handleQuestionButtonInteraction(ButtonInteractionEvent event) {
+        if (event.getMember() == null) {
+            event.getInteraction().deferEdit().queue();
+            return;
+        }
+        if (event.getMessage().getTimeCreated().isBefore(OffsetDateTime.now().minusMinutes(5))) {
+            event.getInteraction().deferEdit().queue();
+            return;
+        }
+        if (event.getComponentId().startsWith("question_incorrect")) {
+            //show ephemereal message?
+            event.getInteraction().deferEdit().queue();
+            return;
+        }
+
+        ActiveMessageEvent deletedEvent = messageEventRepository.deleteByMessageDiscordId(event.getMessageIdLong());
+        if (deletedEvent == null) {
+            //no active event
+            event.getInteraction().deferEdit().queue();
+            return;
+        }
+        Member member = event.getMember();
+        BigInteger points = new BigInteger(deletedEvent.getPoints().toString());
+        addPointsToUser(points, member.getIdLong());
+
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(Color.decode(System.getProperty("embed.event_over_color")))
+                .setTitle(":blobcry: **Event Ended**")
+                .setDescription("Congratulations " + member.getAsMention() + "! You answered correctly first!")
+                .appendDescription("\nYou just received **" + deletedEvent.getPoints().toString() + " Points!!**");
+        event.getChannel().sendMessageEmbeds(embedBuilder.build()).setAllowedMentions(Collections.emptyList()).queue();
+        event.getInteraction().deferEdit().queue();
     }
 
     @Override
@@ -157,8 +240,11 @@ public class PointEventServiceImpl implements PointEventService {
             if (expiredEvent.getEventType() == MessageEventType.BUTTON) {
                 action = "clicked the button";
             }
-            else {
+            else if (expiredEvent.getEventType() == MessageEventType.REACTION){
                 action = "reacted";
+            }
+            else {
+                action = "answered correctly";
             }
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setColor(Color.decode(System.getProperty("embed.event_over_color")))
@@ -175,7 +261,7 @@ public class PointEventServiceImpl implements PointEventService {
         for (ActiveMessageEvent buttonEvent : buttonEvents) {
             MemberButtonCount memberButtonCount = buttonCountRepository.findMaxMemberIdByEventId(buttonEvent.getId());
             if (memberButtonCount != null) {
-                addPointsToUser(new BigInteger(buttonEvent.getPoints().toString()), memberButtonCount.memberId());
+                addPointsToUser(new BigInteger(String.valueOf(memberButtonCount.count() * 100)), memberButtonCount.memberId());
                 successfulEvents.add(buttonEvent);
 
                 Guild guild = Application.getJda().getGuildById(buttonEvent.getGuildDiscordId());

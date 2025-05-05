@@ -8,8 +8,10 @@ public interface PointEventService {
     void sendRandomEventMessage(Long guildDiscordId, Long channelDiscordId);
     void sendReactMessage(TextChannel channel);
     void handleReaction(MessageReactionAddEvent event);
-    void sendButtonMessage(TextChannel channel);
-    void handleButtonInteraction(ButtonInteractionEvent event);
+    void sendClickButtonMessage(TextChannel channel);
+    void handleClickButtonInteraction(ButtonInteractionEvent event);
+    void sendQuestionMessage(TextChannel channel);
+    void handleQuestionButtonInteraction(ButtonInteractionEvent event);
     boolean handleExpiredEvents();
     boolean existsActiveEvent(Long guildDiscordId);
 }

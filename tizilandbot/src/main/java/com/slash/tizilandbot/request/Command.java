@@ -107,9 +107,10 @@ public enum Command {
     }
 
     public static Command getCommandByMessage(String message, String prefix) {
+        String loqerCaseMessage = message.toLowerCase();
         for (Command command : Command.values()) {
-            if (message.equals(prefix + command.commandName) ||
-                    message.startsWith(prefix + command.commandName + " ")) {
+            if (loqerCaseMessage.equals((prefix + command.commandName).toLowerCase()) ||
+                    message.startsWith((prefix + command.commandName + " ").toLowerCase())) {
                 return command;
             }
         }

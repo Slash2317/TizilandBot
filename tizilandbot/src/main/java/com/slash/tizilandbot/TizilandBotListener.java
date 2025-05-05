@@ -111,8 +111,10 @@ public class TizilandBotListener extends ListenerAdapter {
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
         if (event.getComponentId().equals("button_message_event")) {
-            pointEventService.handleButtonInteraction(event);
-            event.getInteraction().deferEdit().queue();
+            pointEventService.handleClickButtonInteraction(event);
+        }
+        else if (event.getComponentId().startsWith("question_correct") || event.getComponentId().startsWith("question_incorrect")) {
+            pointEventService.handleQuestionButtonInteraction(event);
         }
         else {
             CommandGroup group = Arrays.stream(CommandGroup.values()).filter(g -> g.getIdentifier().equalsIgnoreCase(event.getComponentId())).findFirst().get();

@@ -9,7 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class TizilandScheduler {
-    private static final int percentageForAction = 80;
+    private static final int percentageForAction = 5;
 
     private final PointEventService pointEventService;
 
