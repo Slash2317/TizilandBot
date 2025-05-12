@@ -10,6 +10,7 @@ import com.slash.tizilandbot.request.CommandGroup;
 import com.slash.tizilandbot.request.MessageRequestContext;
 import com.slash.tizilandbot.request.RequestContext;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -389,6 +390,9 @@ public class MiscRequestHandler {
             return false;
         }
         if (member.isOwner()) {
+            return true;
+        }
+        if (member.hasPermission(Permission.MANAGE_ROLES)) {
             return true;
         }
         List<Role> roles = member.getRoles();
