@@ -38,6 +38,7 @@ public class Application {
         System.setProperty("general_channel_id", props.getProperty("general_channel_id"));
         System.setProperty("active_channel_id", props.getProperty("active_channel_id"));
         System.setProperty("prefix", props.getProperty("prefix", "t!"));
+        System.setProperty("points_role_id", props.getProperty("points_role_id"));
 
         dataSource = createDataSource(props);
         try {

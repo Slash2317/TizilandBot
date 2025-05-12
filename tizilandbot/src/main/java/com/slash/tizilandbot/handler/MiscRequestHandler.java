@@ -10,8 +10,8 @@ import com.slash.tizilandbot.request.CommandGroup;
 import com.slash.tizilandbot.request.MessageRequestContext;
 import com.slash.tizilandbot.request.RequestContext;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
@@ -190,7 +190,7 @@ public class MiscRequestHandler {
 
     public void handleAddPointsCommand(RequestContext requestContext) {
         try {
-            if (requestContext.getMember() == null || !requestContext.getMember().hasPermission(Permission.MANAGE_ROLES)) {
+            if (requestContext.getMember() == null || !hasPointsPermission(requestContext.getMember())) {
                 throw new InvalidPermissionException("You do not have permission to add points to users");
             }
 
@@ -267,7 +267,7 @@ public class MiscRequestHandler {
 
     public void handleSubtractPointsCommand(RequestContext requestContext) {
         try {
-            if (requestContext.getMember() == null || !requestContext.getMember().hasPermission(Permission.MANAGE_ROLES)) {
+            if (requestContext.getMember() == null || !hasPointsPermission(requestContext.getMember())) {
                 throw new InvalidPermissionException("You do not have permission to subtract points from users");
             }
 
@@ -382,5 +382,21 @@ public class MiscRequestHandler {
         catch (IllegalArgumentException e) {
             requestContext.sendSimpleMessageEmbed("The command must follow this format `" + requestContext.getCommand().getFullDescription(requestContext.getPrefix(), false) + "`");
         }
+    }
+
+    private boolean hasPointsPermission(Member member) {
+        if (member == null) {
+            return false;
+        }
+        if (member.isOwner()) {
+            return true;
+        }
+        List<Role> roles = member.getRoles();
+        for (Role role : roles) {
+            if (role.getIdLong() == Long.parseLong(System.getProperty("points_role_id"))) {
+                return true;
+            }
+        }
+        return false;
     }
 }
