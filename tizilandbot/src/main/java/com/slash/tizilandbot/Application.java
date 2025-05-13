@@ -39,6 +39,7 @@ public class Application {
         System.setProperty("active_channel_id", props.getProperty("active_channel_id"));
         System.setProperty("prefix", props.getProperty("prefix", "t!"));
         System.setProperty("points_role_id", props.getProperty("points_role_id"));
+        System.setProperty("event_chance", props.getProperty("event_chance", "1.6"));
 
         dataSource = createDataSource(props);
         try {

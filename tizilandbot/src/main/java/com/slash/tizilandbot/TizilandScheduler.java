@@ -13,8 +13,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class TizilandScheduler {
-    private static final int percentageForAction = 5;
-
     private final PointEventService pointEventService;
 
     public TizilandScheduler() {
@@ -32,14 +30,16 @@ public class TizilandScheduler {
 
     private void run() {
         try {
+            double eventChance = Double.parseDouble(System.getProperty("eventChance"));
+
             for (Guild guild : Application.getJda().getGuilds()) {
                 boolean eventsExpired = pointEventService.handleExpiredEvents();
                 if (eventsExpired) {
                     continue;
                 }
 
-                int chance = (int) (Math.random() * 100);
-                if (chance < percentageForAction) {
+                int chance = (int) (Math.random() * 1000);
+                if (chance <  10 * eventChance) {
                     if (pointEventService.existsActiveEvent(guild.getIdLong())) {
                         continue;
                     }
